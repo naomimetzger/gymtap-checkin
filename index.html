@@ -247,12 +247,20 @@
 
   <script>
     (function () {
+      var params = new URLSearchParams(window.location.search);
+      var fromNfc =
+        params.has("nfc") ||
+        params.get("from") === "nfc" ||
+        params.get("source") === "nfc";
+
       var GYM = {
-        name: "PureGym Leicester",
-        lat: 52.6369,
-        lng: -1.1398,
-        radiusM: 150,
+        name: params.get("gym") || "PureGym Leicester",
+        lat: parseFloat(params.get("lat")) || 52.6369,
+        lng: parseFloat(params.get("lng")) || -1.1398,
+        radiusM: parseFloat(params.get("radius")) || 150,
       };
+
+      var skipGeofence = fromNfc || params.has("demo");
 
       var STAMP_DESIGN = {
         shape: "circle",
@@ -414,6 +422,12 @@
 
       function start() {
         document.getElementById("err1").textContent = "";
+        if (skipGeofence) {
+          verified = fromNfc;
+          verifyTagEl.textContent = fromNfc ? "NFC tap confirmed" : "Demo mode";
+          gotoSelfie();
+          return;
+        }
         show("s-locating");
         if (!navigator.geolocation) {
           verified = false;
@@ -463,6 +477,12 @@
         var r = stampBook.getBoundingClientRect();
         placeStamp(e.clientX - r.left, e.clientY - r.top);
       });
+
+      if (fromNfc) {
+        document.querySelector("#s-start .sub").textContent =
+          "NFC tap detected — confirming check-in and stamping your passport.";
+        start();
+      }
     })();
   </script>
 </body>

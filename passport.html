@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>GymTap — Passport</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.31.0/iconfont/tabler-icons.min.css" />
+  <style>
+    :root {
+      --font-serif: Georgia, "Times New Roman", serif;
+      --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      --color-background-secondary: #ded9cf;
+      --color-border-tertiary: #c2baa6;
+      --border-radius-lg: 16px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      background: var(--color-background-secondary);
+      font-family: var(--font-serif);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    #gt-device{--paper:#ECE7DB;--paper2:#E4DDCB;--ink:#2C2C2A;--muted:#6B6862;--line:#C9C2B0;--burg:#5A1722}
+    .gt-screen{display:none;flex-direction:column;flex:1;min-height:600px;position:relative;z-index:1}
+    .gt-screen.on{display:flex}
+    .pp-h{font-family:var(--font-serif);font-size:22px;color:var(--ink);line-height:1.15}
+    .pp-sub{color:var(--muted);font-size:13px;line-height:1.6}
+    .pp-step{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+    .pp-label{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:5px}
+    .pp-btn{background:var(--burg);color:#F4EFE3;border:none;border-radius:8px;padding:13px;font-family:var(--font-mono);font-size:13px;letter-spacing:2px;text-transform:uppercase;width:100%;cursor:pointer}
+    .pp-btn:active{transform:scale(.98)}
+    .pp-btn-out{background:none;color:var(--ink);border:1.5px solid var(--line);border-radius:8px;padding:12px;font-family:var(--font-mono);font-size:12px;letter-spacing:1px;text-transform:uppercase;width:100%;cursor:pointer}
+    .pp-card{background:var(--paper2);border:1px solid var(--line);border-radius:8px;padding:14px}
+    .pp-input{width:100%;background:#F4F0E6;border:1px solid var(--line);border-radius:6px;padding:11px;font-family:var(--font-serif);font-size:15px;color:var(--ink)}
+    .pp-nav{display:flex;border-top:1px solid var(--line);margin-top:auto}
+    .pp-nav button{flex:1;background:none;border:none;padding:11px 0;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:var(--muted);cursor:pointer;text-transform:uppercase}
+    .pp-nav button.act{color:var(--burg)}
+    .pp-pageno{position:absolute;top:14px;right:16px;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--muted);z-index:2}
+    .gt-cover{position:absolute;inset:0;border-radius:6px 12px 12px 6px;background:var(--burg);transform-origin:left center;transition:transform 1.15s cubic-bezier(.6,.02,.2,1);box-shadow:0 10px 30px rgba(0,0,0,.3);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#C9A24B;z-index:3;backface-visibility:hidden}
+    .gt-cover.open{transform:rotateY(-158deg)}
+    .gt-imp{position:absolute;font-family:var(--font-mono);text-align:center;mix-blend-mode:multiply;opacity:0;transform:translate(-50%,-50%) scale(1.7) rotate(var(--rot));transition:transform .26s cubic-bezier(.34,1.56,.64,1),opacity .2s;pointer-events:none;line-height:1.15}
+    .gt-imp.set{opacity:.85;transform:translate(-50%,-50%) scale(1) rotate(var(--rot))}
+    .gt-pval{font-family:var(--font-mono);font-size:12px;color:#2C2C2A;letter-spacing:.5px;margin-top:2px}
+    .gt-flab{font-family:var(--font-serif);font-style:italic;font-size:10px;color:#7a766e}
+    .gt-dchip{touch-action:none;user-select:none;padding:11px 15px;border:1.5px solid var(--line);border-radius:8px;background:#F4F0E6;font-family:var(--font-mono);font-size:13px;color:var(--ink);cursor:grab}
+    .gt-sw{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);cursor:pointer;padding:0}
+    .gt-sw.on{outline:2px solid var(--ink);outline-offset:2px}
+  </style>
+</head>
+<body>
+<h2 class="sr-only">GymTap passport with editable details, a white ID page, drag-days-through-security onboarding, and passport colour options.</h2>
+
+<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:16px;width:100%;max-width:380px;">
+<div id="gt-device" style="position:relative;max-width:340px;margin:0 auto;background:#ECE7DB;border-radius:24px;border:.5px solid var(--color-border-tertiary);overflow:hidden;display:flex;flex-direction:column;min-height:640px;">
+  <div style="position:absolute;inset:0;z-index:0;background:repeating-linear-gradient(115deg,rgba(120,100,70,.045) 0 1px,transparent 1px 8px),repeating-linear-gradient(65deg,rgba(120,100,70,.045) 0 1px,transparent 1px 8px);pointer-events:none;"></div>
+
+  <div class="gt-screen on" id="s-cover" style="justify-content:center;align-items:center;padding:30px 24px;">
+    <div class="pp-sub" style="margin-bottom:16px;" id="gt-cover-hint">tap your passport to open</div>
+    <div style="position:relative;width:240px;height:330px;perspective:1700px;">
+      <div style="position:absolute;inset:0;border-radius:6px 12px 12px 6px;background:#E7E0D0;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:var(--font-serif);font-style:italic;">opening…</div>
+      <div class="gt-cover" id="gt-cover" onclick="gtOpenCover()">
+        <div style="font-family:var(--font-serif);font-size:10px;letter-spacing:3px;margin-bottom:16px;">UNITED KINGDOM</div>
+        <i class="ti ti-world" style="font-size:64px;margin-bottom:16px;" aria-hidden="true"></i>
+        <div style="font-family:var(--font-serif);font-size:20px;">Gym Passport</div>
+        <div style="width:32px;height:22px;border:1.5px solid #C9A24B;border-radius:4px;margin-top:34px;display:flex;align-items:center;justify-content:center;"><i class="ti ti-cpu" style="font-size:13px;" aria-hidden="true"></i></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gt-screen" id="s-name" style="padding:30px 24px;"><div class="pp-pageno">PAGE 01</div>
+    <div class="pp-step">first page · 1 of 4</div>
+    <div class="pp-h" style="margin-bottom:22px;">Set up your passport</div>
+    <span class="pp-label">Given names</span>
+    <input id="gt-name" class="pp-input" placeholder="Full name" style="margin-bottom:16px;" />
+    <span class="pp-label">Home gym</span>
+    <input id="gt-gym" class="pp-input" placeholder="e.g. PureGym Leicester" style="margin-bottom:24px;" />
+    <button class="pp-btn" onclick="gtNameNext()">Continue</button>
+  </div>
+
+  <div class="gt-screen" id="s-photo" style="padding:30px 24px;align-items:center;text-align:center;"><div class="pp-pageno">PAGE 02</div>
+    <div class="pp-step">2 of 4</div>
+    <div class="pp-h" style="margin-bottom:8px;">Your passport photo</div>
+    <div class="pp-sub" style="margin-bottom:22px;">Take one now or upload your own — we'll make it black &amp; white.</div>
+    <div id="gt-vf" style="width:120px;height:150px;border-radius:8px;border:2px dashed var(--line);display:flex;align-items:center;justify-content:center;margin-bottom:22px;overflow:hidden;background:#F4F0E6;"><i class="ti ti-camera" style="font-size:38px;color:var(--muted);" aria-hidden="true"></i></div>
+    <button class="pp-btn" id="gt-photo-btn" style="margin-bottom:10px;" onclick="gtTakePhoto()">Take photo</button>
+    <input type="file" id="gt-upload" accept="image/*" style="display:none" />
+    <button class="pp-btn-out" onclick="document.getElementById('gt-upload').click()"><i class="ti ti-upload" style="font-size:14px;vertical-align:-2px;margin-right:6px;" aria-hidden="true"></i>Upload a photo</button>
+  </div>
+
+  <div class="gt-screen" id="s-reveal" style="padding:24px 20px;justify-content:center;"><div class="pp-pageno">PAGE 03</div>
+    <div style="text-align:center;" class="pp-h">Your passport is ready</div>
+    <div style="text-align:center;margin:4px 0 18px;" class="pp-sub">Welcome aboard, traveller.</div>
+    <div id="gt-reveal-card"></div>
+    <button class="pp-btn" style="margin-top:20px;" onclick="gtShow('s-days')">Looks great</button>
+  </div>
+
+  <div class="gt-screen" id="s-days" style="padding:30px 22px;"><div class="pp-pageno">PAGE 04</div>
+    <div class="pp-step">3 of 4</div>
+    <div class="pp-h" style="margin-bottom:6px;">Which days do you train?</div>
+    <div class="pp-sub" style="margin-bottom:16px;">drag each day through security to add it 🛂</div>
+    <div id="gt-day-pool" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px;min-height:46px;"></div>
+    <div id="gt-bin" style="border:2px dashed var(--line);border-radius:12px;padding:14px;text-align:center;background:#F1ECE0;transition:all .2s;margin-bottom:14px;">
+      <div class="pp-label" style="margin:0 0 8px;">security · drag days through</div>
+      <div id="gt-slot" style="height:36px;border-radius:6px;background:#2C2C2A;display:flex;align-items:center;justify-content:center;color:#7FD1B0;font-family:var(--font-mono);font-size:11px;letter-spacing:3px;">⌁  SCANNER  ⌁</div>
+    </div>
+    <div id="gt-cleared" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:28px;margin-bottom:18px;"></div>
+    <button class="pp-btn" onclick="gtShow('s-location')">Continue</button>
+  </div>
+
+  <div class="gt-screen" id="s-location" style="padding:30px 24px;justify-content:center;align-items:center;text-align:center;"><div class="pp-pageno">PAGE 05</div>
+    <i class="ti ti-map-pin" style="font-size:40px;color:var(--burg);margin-bottom:16px;" aria-hidden="true"></i>
+    <div class="pp-step">4 of 4</div>
+    <div class="pp-h" style="margin-bottom:10px;">Turn on location</div>
+    <div class="pp-sub" style="margin-bottom:28px;">We stamp your passport only when you're really at the gym.</div>
+    <button class="pp-btn" onclick="gtFinish()">Enable location</button>
+  </div>
+
+  <div class="gt-screen" id="s-home" style="padding:24px 20px 0;"><div class="pp-pageno">HOME</div>
+    <div class="pp-h" id="gt-greet" style="margin-bottom:2px;">Hi there</div>
+    <div class="pp-sub" style="margin-bottom:20px;">Let's keep the streak alive.</div>
+    <div id="gt-today" class="pp-card" style="margin-bottom:14px;">
+      <span class="pp-label">Today's session</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;"><span id="gt-today-val" style="font-family:var(--font-serif);font-size:17px;color:var(--ink);">Ready to depart</span><i class="ti ti-arrow-right" style="font-size:18px;color:var(--burg);" aria-hidden="true"></i></div>
+    </div>
+    <button class="pp-btn" style="margin-bottom:10px;" onclick="gtGoCheckin()"><i class="ti ti-nfc" style="font-size:16px;vertical-align:-3px;margin-right:6px;" aria-hidden="true"></i>Tap in</button>
+    <button class="pp-btn-out" style="margin-bottom:20px;" onclick="gtTab('s-log')"><i class="ti ti-pencil-plus" style="font-size:15px;vertical-align:-2px;margin-right:6px;" aria-hidden="true"></i><span id="gt-log-txt">Log workout</span></button>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><span class="pp-label" style="margin:0;">This week</span><span style="font-family:var(--font-mono);font-size:12px;color:var(--burg);"><i class="ti ti-flame" style="font-size:14px;vertical-align:-2px;" aria-hidden="true"></i> <span id="gt-streak">2</span> day streak</span></div>
+    <div style="display:flex;gap:4px;margin-bottom:24px;" id="gt-week"></div>
+    <div class="pp-nav" id="nav-home"></div>
+  </div>
+
+  <div class="gt-screen" id="s-tapin" style="padding:24px 20px 0;"><div class="pp-pageno">CHECK-IN</div>
+    <div id="gt-tap-body" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+      <div id="gt-ring" style="width:140px;height:140px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;margin-bottom:24px;transition:all .3s;"><i class="ti ti-nfc" style="font-size:56px;color:var(--burg);" aria-hidden="true"></i></div>
+      <div class="pp-h" style="margin-bottom:8px;">Tap your chip</div>
+      <div class="pp-sub" style="margin-bottom:28px;max-width:240px;">Hold your phone near the GymTap sticker to earn a stamp.</div>
+      <button class="pp-btn" id="gt-tap-btn" style="max-width:240px;" onclick="gtGoCheckin()">Hold near chip</button>
+    </div>
+    <div class="pp-nav" id="nav-tapin"></div>
+  </div>
+
+  <div class="gt-screen" id="s-log" style="padding:20px 20px 0;"><div class="pp-pageno">JOURNAL</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;"><button onclick="gtTab('s-home')" aria-label="Back" style="background:none;border:none;cursor:pointer;color:var(--muted);padding:0;"><i class="ti ti-arrow-left" style="font-size:22px;" aria-hidden="true"></i></button><span class="pp-h">Log workout</span></div>
+    <div id="gt-lifts" style="margin-bottom:14px;"></div>
+    <div class="pp-card" style="margin-bottom:16px;">
+      <span class="pp-label">Exercise</span>
+      <select id="lf-lift" class="pp-input" style="margin-bottom:10px;"><option>Bench press</option><option>Back squat</option><option>Deadlift</option><option>Hip thrust</option><option>Lunge</option><option>Pull-up</option></select>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;"><div><span class="pp-label">Sets</span><select id="lf-sets" class="pp-input"><option>1</option><option>2</option><option selected>3</option><option>4</option></select></div><div><span class="pp-label">Reps</span><select id="lf-reps" class="pp-input"><option>5</option><option>6</option><option selected>8</option><option>10</option><option>12</option></select></div><div><span class="pp-label">Kg</span><input id="lf-wt" type="number" value="60" class="pp-input" /></div></div>
+      <button class="pp-btn-out" onclick="gtAddLift()"><i class="ti ti-plus" style="font-size:14px;vertical-align:-2px;" aria-hidden="true"></i> Add exercise</button>
+    </div>
+    <span class="pp-label">Notes</span>
+    <textarea id="lf-notes" class="pp-input" placeholder="How did it feel?" style="min-height:60px;margin-bottom:18px;"></textarea>
+    <button class="pp-btn" style="margin-bottom:20px;" onclick="gtSaveWorkout()">Save workout</button>
+  </div>
+
+  <div class="gt-screen" id="s-stamps" style="padding:24px 20px 0;"><div class="pp-pageno">PAGE 06</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><span class="pp-h">Stamps</span><span style="font-family:var(--font-mono);font-size:11px;color:var(--muted);"><span id="gt-stampcount">0</span> collected</span></div>
+    <div id="gt-stamp-hint" style="font-family:var(--font-mono);font-size:11px;letter-spacing:.5px;color:var(--burg);margin-bottom:12px;text-transform:uppercase;">tap anywhere to place your stamp</div>
+    <div id="gt-book" style="position:relative;height:320px;border-radius:4px;background:#E9E2D1;border:1px solid var(--line);overflow:hidden;cursor:crosshair;">
+      <div style="position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(120,100,70,.05) 0 1px,transparent 1px 7px),repeating-linear-gradient(65deg,rgba(120,100,70,.05) 0 1px,transparent 1px 7px);"></div>
+      <svg viewBox="0 0 200 200" style="position:absolute;inset:0;width:100%;height:100%;opacity:.07;" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#6B5B3A"/><ellipse cx="100" cy="100" rx="28" ry="70" fill="none" stroke="#6B5B3A"/><ellipse cx="100" cy="100" rx="55" ry="70" fill="none" stroke="#6B5B3A"/></svg>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:14px 0 12px;"><span class="pp-label" style="margin:0;">passport colour</span>
+      <button class="gt-sw on" data-c="#5A1722" onclick="gtColour(this)" style="background:#5A1722"></button>
+      <button class="gt-sw" data-c="#1A1A1A" onclick="gtColour(this)" style="background:#1A1A1A"></button>
+      <button class="gt-sw" data-c="#E29CBB" onclick="gtColour(this)" style="background:#E29CBB"></button>
+    </div>
+    <div class="pp-nav" id="nav-stamps"></div>
+  </div>
+
+</div>
+</div>
+
+<script>
+(function(){
+  var state={name:'',gym:'',passportNo:'',days:new Set(),streak:2,doneToday:false,lifts:[],photoSrc:null},count=0,day=25;
+  var DAYF=['MON','TUE','WED','THU','FRI','SAT','SUN'];
+  var DESIGNS=[{shape:'circle',color:'#B23A3A',top:'ARRIVED',mid:'PGY',ic:'ti-barbell'},{shape:'rect',color:'#2E5FA3',top:'CHECK-IN',mid:'GYM',ic:'ti-nfc'},{shape:'circle',color:'#2E8B57',top:'5AM CLUB',mid:'PGY',ic:'ti-sunrise'},{shape:'rect',color:'#7A4FA0',top:'DEPARTED',mid:'HOME',ic:'ti-plane'}];
+  window.gtShow=function(id){document.querySelectorAll('.gt-screen').forEach(function(s){s.classList.remove('on')});document.getElementById(id).classList.add('on')};
+  window.gtOpenCover=function(){var c=document.getElementById('gt-cover');if(c.classList.contains('open'))return;c.classList.add('open');document.getElementById('gt-cover-hint').textContent='';setTimeout(function(){gtShow('s-name')},950)};
+  function nav(active){var items=[['s-home','ti-home','Home'],['s-tapin','ti-nfc','Tap in'],['s-stamps','ti-stamp','Stamps']];return items.map(function(it){return '<button class="'+(it[0]===active?'act':'')+'" onclick="gtTab(\''+it[0]+'\')"><i class="ti '+it[1]+'" style="font-size:19px;" aria-hidden="true"></i>'+it[2]+'</button>'}).join('')}
+  document.getElementById('nav-home').innerHTML=nav('s-home');document.getElementById('nav-tapin').innerHTML=nav('s-tapin');document.getElementById('nav-stamps').innerHTML=nav('s-stamps');
+
+  window.gtGoCheckin=function(){
+    var q='?nfc=1';
+    if(state.gym)q+='&gym='+encodeURIComponent(state.gym);
+    window.location.href='/'+q;
+  };
+
+  window.gtColour=function(btn){var c=btn.getAttribute('data-c');document.getElementById('gt-device').style.setProperty('--burg',c);document.querySelectorAll('.gt-sw').forEach(function(s){s.classList.remove('on')});btn.classList.add('on')};
+
+  window.gtNameNext=function(){state.name=document.getElementById('gt-name').value.trim()||'New Member';state.gym=document.getElementById('gt-gym').value.trim()||'PureGym Leicester';state.passportNo='GT '+Math.floor(1000+Math.random()*9000);gtShow('s-photo')};
+  function photoSVG(sz){return '<svg viewBox="0 0 100 120" width="'+sz+'" height="'+(sz*1.2)+'"><rect width="100" height="120" fill="#D9D5CC"/><circle cx="50" cy="44" r="22" fill="#9A958B"/><path d="M14 120 C14 88 36 74 50 74 C64 74 86 88 86 120 Z" fill="#9A958B"/></svg>'}
+  function photoEl(sz){if(state.photoSrc)return '<img src="'+state.photoSrc+'" style="width:'+sz+'px;height:'+(sz*1.2)+'px;object-fit:cover;filter:grayscale(1) contrast(1.08);display:block;" alt="passport photo"/>';return '<div style="filter:grayscale(1) contrast(1.1);">'+photoSVG(sz)+'</div>'}
+  window.gtTakePhoto=function(){state.photoSrc=null;var vf=document.getElementById('gt-vf');vf.style.border='none';vf.innerHTML=photoEl(120);gtPhotoDone()};
+  document.getElementById('gt-upload').addEventListener('change',function(e){var f=e.target.files&&e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(ev){state.photoSrc=ev.target.result;var vf=document.getElementById('gt-vf');vf.style.border='none';vf.innerHTML=photoEl(120);gtPhotoDone()};r.readAsDataURL(f)});
+  function gtPhotoDone(){var b=document.getElementById('gt-photo-btn');b.textContent='Create my passport';b.setAttribute('onclick','gtReveal()')}
+  window.gtReveal=function(){document.getElementById('gt-reveal-card').innerHTML=passportID();gtShow('s-reveal')};
+  function fmtName(){return (state.name||'New Member').toUpperCase()}
+  function daysStr(){if(!state.days.size)return '—';return Array.from(state.days).map(Number).sort().map(function(i){return DAYF[i]}).join(' ')}
+  function passportID(){return '<div style="background:#FFFFFF;border:1px solid #E2E2E2;border-left:6px solid var(--burg);border-radius:6px;padding:14px;">'+
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;"><div><div style="font-family:var(--font-serif);font-size:18px;color:#2C2C2A;">Gym Passport</div><div style="font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:#8a8780;">UNITED KINGDOM</div></div><i class="ti ti-plane-tilt" style="font-size:18px;color:var(--burg);" aria-hidden="true"></i></div>'+
+      '<div style="display:flex;gap:12px;"><div style="border:1px solid #E2E2E2;">'+photoEl(88)+'</div><div style="flex:1;border:1px solid #E2E2E2;border-bottom:none;">'+
+      '<div style="padding:6px 9px;"><div class="gt-flab">Name</div><div class="gt-pval">'+fmtName()+'</div></div>'+
+      '<div style="padding:6px 9px;border-top:1px solid #E2E2E2;"><div class="gt-flab">Passport no</div><div class="gt-pval">'+state.passportNo+'</div></div>'+
+      '<div style="padding:6px 9px;border-top:1px solid #E2E2E2;"><div class="gt-flab">Home gym</div><div class="gt-pval">'+state.gym.toUpperCase()+'</div></div></div></div>'+
+      '<div style="border:1px solid #E2E2E2;border-top:none;display:flex;"><div style="padding:6px 9px;flex:1;"><div class="gt-flab">Training days</div><div class="gt-pval">'+daysStr()+'</div></div><div style="padding:6px 9px;border-left:1px solid #E2E2E2;"><div class="gt-flab">Class</div><div class="gt-pval">ROOKIE</div></div></div>'+
+      '<div style="border:1px solid #E2E2E2;border-top:none;padding:6px 9px;font-family:var(--font-mono);font-size:11px;letter-spacing:1px;color:#2C2C2A;overflow:hidden;white-space:nowrap;">P&lt;GBR'+fmtName().replace(/ /g,'&lt;')+'&lt;&lt;&lt;&lt;&lt;&lt;</div></div>'}
+
+  var dragging=null,ox=0,oy=0;
+  function startDrag(e){dragging=e.currentTarget;dragging.setPointerCapture(e.pointerId);ox=e.clientX;oy=e.clientY;dragging.style.transition='none';dragging.style.zIndex=60;dragging.style.position='relative';dragging.dataset.dx=0;dragging.dataset.dy=0;dragging.style.cursor='grabbing'}
+  function moveDrag(e){if(!dragging)return;var dx=e.clientX-ox,dy=e.clientY-oy;dragging.dataset.dx=dx;dragging.dataset.dy=dy;dragging.style.transform='translate('+dx+'px,'+dy+'px) scale(1.06)'}
+  function endDrag(e){if(!dragging)return;var chip=dragging;dragging=null;chip.style.cursor='grab';var bin=document.getElementById('gt-bin').getBoundingClientRect();var cr=chip.getBoundingClientRect();var cx=cr.left+cr.width/2,cy=cr.top+cr.height/2;
+    if(cx>bin.left&&cx<bin.right&&cy>bin.top&&cy<bin.bottom){processDay(chip,bin,cr)}else{chip.style.transition='transform .2s';chip.style.transform='translate(0,0)'}}
+  function processDay(chip,bin,cr){var cx=cr.left+cr.width/2,cy=cr.top+cr.height/2;var tx=(bin.left+bin.width/2)-cx+parseFloat(chip.dataset.dx||0);var ty=(bin.top+bin.height/2)-cy+parseFloat(chip.dataset.dy||0);chip.style.transition='transform .35s,opacity .35s';chip.style.transform='translate('+tx+'px,'+ty+'px) scale(.15)';chip.style.opacity='0';flashBin();var d=chip.dataset.d;state.days.add(d);setTimeout(function(){chip.remove();addCleared(d)},340)}
+  function flashBin(){var bin=document.getElementById('gt-bin'),slot=document.getElementById('gt-slot');bin.style.borderColor='#2E8B57';bin.style.background='#E6F4EC';slot.style.color='#fff';slot.style.background='#2E8B57';slot.textContent='✓  CLEARED';setTimeout(function(){bin.style.borderColor='var(--line)';bin.style.background='#F1ECE0';slot.style.background='#2C2C2A';slot.style.color='#7FD1B0';slot.textContent='⌁  SCANNER  ⌁'},650)}
+  function addCleared(d){var c=document.getElementById('gt-cleared');var pill=document.createElement('div');pill.style.cssText='padding:6px 10px;border-radius:20px;background:var(--burg);color:#F4EFE3;font-family:var(--font-mono);font-size:11px;letter-spacing:1px;display:flex;align-items:center;gap:4px;';pill.innerHTML='<i class="ti ti-check" style="font-size:12px;" aria-hidden="true"></i>'+DAYF[d];c.appendChild(pill)}
+  function buildDays(){var pool=document.getElementById('gt-day-pool');pool.innerHTML='';DAYF.forEach(function(lab,i){var chip=document.createElement('div');chip.className='gt-dchip';chip.dataset.d=i;chip.textContent=lab;chip.addEventListener('pointerdown',startDrag);chip.addEventListener('pointermove',moveDrag);chip.addEventListener('pointerup',endDrag);pool.appendChild(chip)})}
+  buildDays();
+
+  window.gtFinish=function(){document.getElementById('gt-greet').textContent='Hi '+state.name.split(' ')[0];gtWeek();gtShow('s-home')};
+  window.gtTab=function(id){gtShow(id)};
+  function gtWeek(){var labels=['M','T','W','T','F','S','S'];var w=document.getElementById('gt-week');w.innerHTML='';for(var i=0;i<7;i++){var inner=labels[i],st='width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:12px;border:1.5px solid var(--line);color:var(--muted);';if(i<2||(i===2&&state.doneToday)){st='width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--burg);color:#F4EFE3;';inner='<i class="ti ti-check" aria-hidden="true"></i>'}else if(i===2){st='width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--burg);color:var(--burg);'}var col=document.createElement('div');col.style.cssText='flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--font-mono);font-size:10px;color:var(--muted);';col.innerHTML='<div style="'+st+'">'+inner+'</div>'+labels[i];w.appendChild(col)}}
+  window.gtAddLift=function(){state.lifts.push({lift:document.getElementById('lf-lift').value,sets:document.getElementById('lf-sets').value,reps:document.getElementById('lf-reps').value,wt:document.getElementById('lf-wt').value});gtRenderLifts()};
+  window.gtRmLift=function(i){state.lifts.splice(i,1);gtRenderLifts()};
+  function gtRenderLifts(){var c=document.getElementById('gt-lifts');c.innerHTML=state.lifts.map(function(l,j){return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:#F1ECE0;"><div><div style="font-family:var(--font-serif);font-size:14px;color:var(--ink);">'+l.lift+'</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--muted);">'+l.sets+'×'+l.reps+' · '+l.wt+'kg</div></div><button onclick="gtRmLift('+j+')" aria-label="Remove" style="background:none;border:none;cursor:pointer;color:var(--muted);"><i class="ti ti-x" style="font-size:18px;" aria-hidden="true"></i></button></div>'}).join('')}
+  window.gtSaveWorkout=function(){var n=state.lifts.length;document.getElementById('gt-log-txt').textContent='Workout logged';document.getElementById('gt-today-val').textContent=(state.doneToday?'Checked in · ':'')+n+' lift'+(n===1?'':'s')+' logged';gtTab('s-home')};
+  function impHTML(d,dateStr){var icon=d.ic?'<i class="ti '+d.ic+'" style="font-size:15px;" aria-hidden="true"></i>':'';
+    if(d.shape==='circle')return '<div style="width:80px;height:80px;border:2.5px solid '+d.color+';border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;"><div style="position:absolute;inset:6px;border:1px dashed '+d.color+';border-radius:50%;"></div><div style="font-size:10px;font-weight:700;">'+d.top+'</div>'+icon+'<div style="font-size:8px;letter-spacing:1px;">'+d.mid+'</div><div style="font-size:8px;border-top:1px solid '+d.color+';padding-top:1px;margin-top:1px;">'+dateStr+'</div></div>';
+    return '<div style="min-width:96px;border:2.5px solid '+d.color+';border-radius:6px;padding:6px 10px;"><div style="font-size:10px;font-weight:700;letter-spacing:1px;">'+d.top+'</div><div style="display:flex;align-items:center;justify-content:center;gap:4px;font-size:9px;margin:2px 0;">'+icon+d.mid+'</div><div style="font-size:9px;letter-spacing:2px;border-top:1px solid '+d.color+';padding-top:2px;">'+dateStr+'</div></div>'}
+  var book=document.getElementById('gt-book');
+  book.addEventListener('click',function(e){var r=book.getBoundingClientRect();var x=e.clientX-r.left,y=e.clientY-r.top;var d=DESIGNS[count%DESIGNS.length];var rot=(Math.random()*30-15).toFixed(1);var dateStr=(day+count)+' JUN';
+    var imp=document.createElement('div');imp.className='gt-imp';imp.style.setProperty('--rot',rot+'deg');imp.style.left=x+'px';imp.style.top=y+'px';imp.style.color=d.color;imp.innerHTML=impHTML(d,dateStr);book.appendChild(imp);
+    requestAnimationFrame(function(){requestAnimationFrame(function(){imp.classList.add('set')})});
+    count++;document.getElementById('gt-stampcount').textContent=count;document.getElementById('gt-stamp-hint').textContent='keep stamping, or tap in to earn more';});
+})();
+</script>
+</body>
+</html>

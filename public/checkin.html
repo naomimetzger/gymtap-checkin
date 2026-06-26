@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>GymTap — Check in</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.31.0/iconfont/tabler-icons.min.css" />
+  <style>
+    :root {
+      --serif: Georgia, "Times New Roman", serif;
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      --paper: #ece7db;
+      --ink: #241f1a;
+      --muted: #4f4a42;
+      --line: #c2baa6;
+      --burg: #5a1722;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      background: #ded9cf;
+      font-family: var(--serif);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+    .card {
+      position: relative;
+      width: 100%;
+      max-width: 360px;
+      min-height: 560px;
+      background: var(--paper);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+      display: flex;
+      flex-direction: column;
+    }
+    .tex {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        repeating-linear-gradient(115deg, rgba(120, 100, 70, 0.05) 0 1px, transparent 1px 8px),
+        repeating-linear-gradient(65deg, rgba(120, 100, 70, 0.05) 0 1px, transparent 1px 8px);
+    }
+    .scr {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 34px 26px;
+    }
+    .scr.on { display: flex; }
+    .scr--done { justify-content: flex-start; padding-top: 28px; overflow-y: auto; }
+    .kick {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .h {
+      font-family: var(--serif);
+      font-size: 26px;
+      line-height: 1.15;
+      margin: 0 0 10px;
+    }
+    .sub {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+    .btn {
+      background: var(--burg);
+      color: #f6f1e6;
+      border: none;
+      border-radius: 10px;
+      padding: 15px 18px;
+      font-family: var(--mono);
+      font-size: 14px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn[disabled] { opacity: 0.5; }
+    .cam-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    .globe {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--burg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #c9a24b;
+      margin-bottom: 18px;
+    }
+    .ring {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 22px;
+      color: var(--burg);
+      transition: border-color 0.3s;
+    }
+    .ring--err { border-color: #b23a3a; color: #b23a3a; }
+    .spin { animation: sp 1s linear infinite; }
+    @keyframes sp { to { transform: rotate(360deg); } }
+    .err { color: #b23a3a; font-size: 13px; margin-top: 14px; min-height: 18px; }
+    .pass {
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      font-family: var(--mono);
+      text-align: left;
+      background: #fff;
+    }
+    .selfie { width: 100%; height: 150px; object-fit: cover; }
+    .prow {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 14px;
+      font-size: 12px;
+    }
+    .plabel { color: #8a857c; font-style: italic; font-family: var(--serif); }
+    .stamp-section { width: 100%; margin-top: 20px; text-align: left; }
+    .stamp-hint {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      color: var(--burg);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .stamp-book {
+      position: relative;
+      height: 200px;
+      border-radius: 4px;
+      background: #e9e2d1;
+      border: 1px solid var(--line);
+      overflow: hidden;
+      cursor: crosshair;
+    }
+    .stamp-book__watermark {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.07;
+      pointer-events: none;
+    }
+    .gt-imp {
+      position: absolute;
+      font-family: var(--mono);
+      text-align: center;
+      mix-blend-mode: multiply;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(1.7) rotate(var(--rot, 0deg));
+      transition: transform 0.26s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s;
+      pointer-events: none;
+      line-height: 1.15;
+    }
+    .gt-imp.set {
+      opacity: 0.85;
+      transform: translate(-50%, -50%) scale(1) rotate(var(--rot, 0deg));
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="tex" aria-hidden="true"></div>
+
+    <section class="scr on" id="s-start" aria-labelledby="gymname">
+      <div class="globe"><i class="ti ti-world" style="font-size:34px" aria-hidden="true"></i></div>
+      <p class="kick">Gym Passport</p>
+      <h1 class="h" id="gymname">PureGym Leicester</h1>
+      <p class="sub">Ready to check in? We confirm you are here, then stamp your passport.</p>
+      <button type="button" class="btn" id="btn-start">
+        <i class="ti ti-nfc" style="font-size:16px;vertical-align:-3px;margin-right:6px" aria-hidden="true"></i>
+        Check in
+      </button>
+      <p class="err" id="err1" role="alert"></p>
+    </section>
+
+    <section class="scr" id="s-locating" aria-live="polite">
+      <div class="ring"><i class="ti ti-map-pin spin" style="font-size:40px" aria-hidden="true"></i></div>
+      <h1 class="h">Confirming you are here…</h1>
+      <p class="sub">Allow location so your stamp is proof you showed up.</p>
+    </section>
+
+    <section class="scr" id="s-far">
+      <div class="ring ring--err"><i class="ti ti-map-pin-off" style="font-size:40px" aria-hidden="true"></i></div>
+      <h1 class="h">You are not at the gym yet</h1>
+      <p class="sub" id="farsub">Get a little closer and try again.</p>
+      <button type="button" class="btn" data-goto="s-start">Try again</button>
+    </section>
+
+    <section class="scr" id="s-selfie">
+      <p class="kick" id="verifytag">Location confirmed</p>
+      <h1 class="h">Smile — you made it</h1>
+      <p class="sub">Snap a selfie. It becomes today&apos;s stamp.</p>
+      <label class="btn" id="btn-camera" for="cam">
+        <i class="ti ti-camera" style="font-size:16px;vertical-align:-3px;margin-right:6px" aria-hidden="true"></i>
+        Take selfie
+      </label>
+      <input id="cam" class="cam-input" type="file" accept="image/*" capture="user" />
+      <p class="err" id="err2" role="alert"></p>
+    </section>
+
+    <section class="scr scr--done" id="s-done">
+      <p class="kick">
+        <i class="ti ti-circle-check" style="color:#2e8b57;font-size:15px;vertical-align:-2px" aria-hidden="true"></i>
+        You&apos;re in
+      </p>
+      <h1 class="h" style="margin-bottom:8px">Stamped</h1>
+      <p class="sub" style="margin-bottom:16px;font-size:13px">You earned a stamp. It&apos;s in your passport below.</p>
+      <div class="pass" id="passcard"></div>
+
+      <div class="stamp-section">
+        <p class="stamp-hint" id="stamp-hint">Tap the page to place another stamp</p>
+        <div class="stamp-book" id="stamp-book" role="img" aria-label="Passport stamp page">
+          <div class="tex" aria-hidden="true"></div>
+          <svg class="stamp-book__watermark" viewBox="0 0 200 200" aria-hidden="true">
+            <circle cx="100" cy="100" r="70" fill="none" stroke="#6b5b3a" />
+            <ellipse cx="100" cy="100" rx="28" ry="70" fill="none" stroke="#6b5b3a" />
+            <ellipse cx="100" cy="100" rx="55" ry="70" fill="none" stroke="#6b5b3a" />
+          </svg>
+        </div>
+      </div>
+      <a href="/?checkedin=1" id="passport-link" class="btn" style="display:none;margin-top:18px;text-decoration:none;text-align:center">Back to passport</a>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var CHECKIN_KEY = "gymtap-checkins";
+      var params = new URLSearchParams(window.location.search);
+      var fromNfc =
+        params.has("nfc") ||
+        params.get("from") === "nfc" ||
+        params.get("source") === "nfc";
+      var fromPassport = params.get("from") === "passport";
+      var directSelfie =
+        params.get("step") === "selfie" ||
+        window.location.hash === "#selfie";
+
+      var GYM = {
+        name: params.get("gym") || "PureGym Leicester",
+        lat: parseFloat(params.get("lat")) || 52.6369,
+        lng: parseFloat(params.get("lng")) || -1.1398,
+        radiusM: parseFloat(params.get("radius")) || 150,
+      };
+
+      var skipGeofence = fromNfc || params.has("demo");
+
+      var STAMP_DESIGN = {
+        shape: "circle",
+        color: "#b23a3a",
+        top: "ARRIVED",
+        mid: "PGY",
+        icon: "ti-barbell",
+      };
+
+      var selfieData = null;
+      var verified = false;
+      var stampCount = 0;
+
+      var gymNameEl = document.getElementById("gymname");
+      var verifyTagEl = document.getElementById("verifytag");
+      var farsubEl = document.getElementById("farsub");
+      var passcardEl = document.getElementById("passcard");
+      var stampBook = document.getElementById("stamp-book");
+      var stampHint = document.getElementById("stamp-hint");
+
+      gymNameEl.textContent = GYM.name;
+
+      function isoDate(d) {
+        var x = new Date(d);
+        x.setHours(0, 0, 0, 0);
+        return (
+          x.getFullYear() +
+          "-" +
+          String(x.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(x.getDate()).padStart(2, "0")
+        );
+      }
+
+      function recordCheckin() {
+        try {
+          var iso = isoDate(new Date());
+          var list = JSON.parse(localStorage.getItem(CHECKIN_KEY) || "[]");
+          if (list.indexOf(iso) === -1) {
+            list.push(iso);
+            localStorage.setItem(CHECKIN_KEY, JSON.stringify(list));
+          }
+        } catch (e) {}
+      }
+
+      function show(id) {
+        document.querySelectorAll(".scr").forEach(function (s) {
+          s.classList.remove("on");
+        });
+        document.getElementById(id).classList.add("on");
+      }
+
+      function distanceM(la1, lo1, la2, lo2) {
+        var R = 6371000;
+        var p1 = (la1 * Math.PI) / 180;
+        var p2 = (la2 * Math.PI) / 180;
+        var dp = ((la2 - la1) * Math.PI) / 180;
+        var dl = ((lo2 - lo1) * Math.PI) / 180;
+        var a =
+          Math.sin(dp / 2) * Math.sin(dp / 2) +
+          Math.cos(p1) * Math.cos(p2) * Math.sin(dl / 2) * Math.sin(dl / 2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      }
+
+      function gymCode() {
+        return (GYM.name.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 3) || "GYM");
+      }
+
+      function stampDateLabel() {
+        return new Date()
+          .toLocaleString("en-GB", { day: "2-digit", month: "short" })
+          .toUpperCase()
+          .replace(" ", " ");
+      }
+
+      function stampHTML(d, dateStr) {
+        var icon = d.icon
+          ? '<i class="ti ' + d.icon + '" style="font-size:15px" aria-hidden="true"></i>'
+          : "";
+        if (d.shape === "circle") {
+          return (
+            '<div style="width:72px;height:72px;border:2.5px solid ' +
+            d.color +
+            ';border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative">' +
+            '<div style="position:absolute;inset:5px;border:1px dashed ' +
+            d.color +
+            ';border-radius:50%"></div>' +
+            '<div style="font-size:9px;font-weight:700">' +
+            d.top +
+            "</div>" +
+            icon +
+            '<div style="font-size:7px;letter-spacing:1px">' +
+            d.mid +
+            '</div><div style="font-size:7px;border-top:1px solid ' +
+            d.color +
+            ';padding-top:1px;margin-top:1px">' +
+            dateStr +
+            "</div></div>"
+          );
+        }
+        return (
+          '<div style="min-width:88px;border:2.5px solid ' +
+          d.color +
+          ';border-radius:6px;padding:5px 8px"><div style="font-size:9px;font-weight:700;letter-spacing:1px">' +
+          d.top +
+          '</div><div style="display:flex;align-items:center;justify-content:center;gap:4px;font-size:8px;margin:2px 0">' +
+          icon +
+          d.mid +
+          '</div><div style="font-size:8px;letter-spacing:2px;border-top:1px solid ' +
+          d.color +
+          ';padding-top:2px">' +
+          dateStr +
+          "</div></div>"
+        );
+      }
+
+      function placeStamp(x, y) {
+        var d = STAMP_DESIGN;
+        d.mid = gymCode().slice(0, 3);
+        var rot = (Math.random() * 24 - 12).toFixed(1);
+        var imp = document.createElement("div");
+        imp.className = "gt-imp";
+        imp.style.setProperty("--rot", rot + "deg");
+        imp.style.left = x + "px";
+        imp.style.top = y + "px";
+        imp.style.color = d.color;
+        imp.innerHTML = stampHTML(d, stampDateLabel());
+        stampBook.appendChild(imp);
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            imp.classList.add("set");
+          });
+        });
+        stampCount++;
+        stampHint.textContent =
+          stampCount === 1
+            ? "Tap the page to place another stamp"
+            : stampCount + " stamps on this page";
+      }
+
+      function placeStampCenter() {
+        var r = stampBook.getBoundingClientRect();
+        placeStamp(r.width * 0.5, r.height * 0.42);
+      }
+
+      function buildPass() {
+        var now = new Date();
+        var date = now.toLocaleString("en-GB", { day: "2-digit", month: "short" }).toUpperCase();
+        var time = now.toLocaleString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+        var code = gymCode();
+        passcardEl.innerHTML =
+          '<img class="selfie" src="' +
+          selfieData +
+          '" alt="Check-in selfie" />' +
+          '<div style="background:var(--burg);color:#fff;padding:8px 14px;display:flex;justify-content:space-between;font-size:11px;letter-spacing:1px">' +
+          "<span>ARRIVED · " +
+          code +
+          "</span><span>" +
+          (verified ? "VERIFIED" : "CHECK-IN") +
+          "</span></div>" +
+          '<div class="prow" style="border-bottom:1px dashed var(--line)"><span class="plabel">Date</span><span>' +
+          date +
+          "</span></div>" +
+          '<div class="prow" style="border-bottom:1px dashed var(--line)"><span class="plabel">Time</span><span>' +
+          time +
+          "</span></div>" +
+          '<div class="prow"><span class="plabel">Gym</span><span>' +
+          GYM.name.toUpperCase() +
+          "</span></div>";
+      }
+
+      function finish() {
+        recordCheckin();
+        buildPass();
+        show("s-done");
+        if (fromPassport) {
+          document.getElementById("passport-link").style.display = "block";
+        }
+        requestAnimationFrame(placeStampCenter);
+      }
+
+      function gotoSelfie() {
+        verifyTagEl.textContent = verified ? "Location confirmed" : "Checking in";
+        show("s-selfie");
+      }
+
+      function start() {
+        document.getElementById("err1").textContent = "";
+        if (skipGeofence) {
+          verified = fromNfc;
+          verifyTagEl.textContent = fromNfc ? "NFC tap confirmed" : "Demo mode";
+          gotoSelfie();
+          return;
+        }
+        show("s-locating");
+        if (!navigator.geolocation) {
+          verified = false;
+          gotoSelfie();
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          function (pos) {
+            var d = distanceM(pos.coords.latitude, pos.coords.longitude, GYM.lat, GYM.lng);
+            if (d <= GYM.radiusM) {
+              verified = true;
+              gotoSelfie();
+            } else {
+              farsubEl.textContent =
+                "You are about " + Math.round(d) + "m away. Get closer and try again.";
+              show("s-far");
+            }
+          },
+          function () {
+            verified = false;
+            gotoSelfie();
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+      }
+
+      document.getElementById("btn-start").addEventListener("click", start);
+      document.querySelectorAll("[data-goto]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          show(btn.getAttribute("data-goto"));
+        });
+      });
+      document.getElementById("cam").addEventListener("change", function (e) {
+        var f = e.target.files && e.target.files[0];
+        if (!f) return;
+        var r = new FileReader();
+        r.onload = function (ev) {
+          selfieData = ev.target.result;
+          finish();
+        };
+        r.readAsDataURL(f);
+      });
+      stampBook.addEventListener("click", function (e) {
+        var r = stampBook.getBoundingClientRect();
+        placeStamp(e.clientX - r.left, e.clientY - r.top);
+      });
+
+      if (fromNfc && directSelfie) {
+        verified = true;
+        verifyTagEl.textContent = "NFC tap confirmed";
+        document.querySelector("#s-start .sub").textContent =
+          "NFC tap detected — snap a selfie to earn your stamp.";
+        gotoSelfie();
+      } else if (fromNfc) {
+        document.querySelector("#s-start .sub").textContent =
+          "NFC tap detected — confirming check-in and stamping your passport.";
+        start();
+      }
+    })();
+  </script>
+</body>
+</html>

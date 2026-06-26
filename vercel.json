@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/passport.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "query", "key": "nfc" }],
+      "destination": "/checkin.html",
+      "permanent": false
+    }
+  ]
+}

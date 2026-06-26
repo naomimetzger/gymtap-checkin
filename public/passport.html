@@ -52,11 +52,6 @@
     .pp-pageno{position:absolute;top:14px;right:16px;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--muted);z-index:2}
     .gt-cover{position:absolute;inset:0;border-radius:6px 12px 12px 6px;transform-origin:left center;transition:transform 1.15s cubic-bezier(.6,.02,.2,1);box-shadow:0 10px 28px rgba(44,44,42,.22);cursor:pointer;z-index:3;backface-visibility:hidden;background:#0a0a0a;display:flex;align-items:center;justify-content:center}
     .gt-cover img{width:100%;height:100%;object-fit:contain;display:block;background:transparent}
-    .gt-cover img#gt-cover-img{transition:opacity .35s ease}
-    .gt-cover img#gt-cover-img.fade{opacity:0}
-    .pp-cover-toggle{margin-top:auto;width:100%;max-width:240px;padding:11px 14px;font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;background:#F4F0E6;color:var(--burg);border:1.5px solid var(--line);border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-    .pp-cover-toggle:hover{border-color:var(--burg);background:#ECE7DB}
-    .pp-cover-toggle:active{transform:scale(.98)}
     .gt-cover.open{transform:rotateY(-158deg)}
     .gt-imp{position:absolute;font-family:var(--font-mono);text-align:center;mix-blend-mode:multiply;opacity:0;transform:translate(-50%,-50%) scale(1.7) rotate(var(--rot));transition:transform .26s cubic-bezier(.34,1.56,.64,1),opacity .2s;pointer-events:none;line-height:1.15}
     .gt-imp.set{opacity:.85;transform:translate(-50%,-50%) scale(1) rotate(var(--rot))}
@@ -80,17 +75,14 @@
 <div id="gt-device" style="position:relative;max-width:340px;margin:0 auto;background:#ECE7DB;border-radius:24px;border:.5px solid var(--color-border-tertiary);overflow:hidden;display:flex;flex-direction:column;min-height:640px;">
   <div style="position:absolute;inset:0;z-index:0;background:repeating-linear-gradient(115deg,rgba(120,100,70,.045) 0 1px,transparent 1px 8px),repeating-linear-gradient(65deg,rgba(120,100,70,.045) 0 1px,transparent 1px 8px);pointer-events:none;"></div>
 
-  <div class="gt-screen on" id="s-cover" style="flex:1;align-items:center;padding:30px 24px 24px;text-align:center;">
-    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;">
-      <div class="pp-sub" style="margin-bottom:16px;" id="gt-cover-hint">tap your passport to open</div>
-      <div style="position:relative;width:240px;height:280px;perspective:1700px;margin:0 auto;">
-        <div style="position:absolute;inset:0;border-radius:6px 12px 12px 6px;background:transparent;display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:var(--font-serif);font-style:italic;">opening…</div>
-        <div class="gt-cover" id="gt-cover" onclick="gtOpenCover()">
-          <img id="gt-cover-img" src="/passport-cover-black.png" alt="Gym Passport cover" width="240" height="280" />
-        </div>
+  <div class="gt-screen on" id="s-cover" style="flex:1;justify-content:center;align-items:center;padding:30px 24px;text-align:center;">
+    <div class="pp-sub" style="margin-bottom:16px;" id="gt-cover-hint">tap your passport to open</div>
+    <div style="position:relative;width:240px;height:280px;perspective:1700px;margin:0 auto;">
+      <div style="position:absolute;inset:0;border-radius:6px 12px 12px 6px;background:transparent;display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:var(--font-serif);font-style:italic;">opening…</div>
+      <div class="gt-cover" id="gt-cover" onclick="gtOpenCover()">
+        <img src="/passport-cover.png" alt="Gym Passport cover" width="240" height="280" />
       </div>
     </div>
-    <button type="button" class="pp-cover-toggle" id="gt-cover-toggle" onclick="gtToggleCover()"><i class="ti ti-palette" style="font-size:14px;" aria-hidden="true"></i><span id="gt-cover-toggle-label">Switch to pink cover</span></button>
   </div>
 
   <div class="gt-screen" id="s-name" style="padding:24px;justify-content:center;"><div class="pp-pageno">PAGE 01</div>
@@ -201,9 +193,6 @@
 <script>
 (function(){
   var CHECKIN_KEY='gymtap-checkins';
-  var COVER_KEY='gymtap-passport-cover';
-  var COVER_SRC={pink:'/passport-cover-pink.png',black:'/passport-cover-black.png'};
-  var coverColor='black';
   var state={name:'',gym:'',passportNo:'',days:new Set(),streak:0,doneToday:false,lifts:[],photoSrc:null},count=0,day=25;
   var nfcAbort=null,nfcReader=null;
   var DAYF=['MON','TUE','WED','THU','FRI','SAT','SUN'];

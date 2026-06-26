@@ -94,6 +94,17 @@
     }
     .btn:active { transform: scale(0.98); }
     .btn[disabled] { opacity: 0.5; }
+    .cam-input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
     .globe {
       width: 64px;
       height: 64px;
@@ -214,11 +225,11 @@
       <p class="kick" id="verifytag">Location confirmed</p>
       <h1 class="h">Smile — you made it</h1>
       <p class="sub">Snap a selfie. It becomes today&apos;s stamp.</p>
-      <button type="button" class="btn" id="btn-camera">
+      <label class="btn" id="btn-camera" for="cam">
         <i class="ti ti-camera" style="font-size:16px;vertical-align:-3px;margin-right:6px" aria-hidden="true"></i>
         Take selfie
-      </button>
-      <input id="cam" type="file" accept="image/*" capture="user" hidden />
+      </label>
+      <input id="cam" class="cam-input" type="file" accept="image/*" capture="user" />
       <p class="err" id="err2" role="alert"></p>
     </section>
 
@@ -455,9 +466,6 @@
       }
 
       document.getElementById("btn-start").addEventListener("click", start);
-      document.getElementById("btn-camera").addEventListener("click", function () {
-        document.getElementById("cam").click();
-      });
       document.querySelectorAll("[data-goto]").forEach(function (btn) {
         btn.addEventListener("click", function () {
           show(btn.getAttribute("data-goto"));

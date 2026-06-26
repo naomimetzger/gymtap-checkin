@@ -209,10 +209,10 @@
   var DAYF=['MON','TUE','WED','THU','FRI','SAT','SUN'];
   var DESIGNS=[{shape:'circle',color:'#B23A3A',top:'ARRIVED',mid:'PGY',ic:'ti-barbell'},{shape:'rect',color:'#2E5FA3',top:'CHECK-IN',mid:'GYM',ic:'ti-nfc'},{shape:'circle',color:'#2E8B57',top:'5AM CLUB',mid:'PGY',ic:'ti-sunrise'},{shape:'rect',color:'#7A4FA0',top:'DEPARTED',mid:'HOME',ic:'ti-plane'}];
 
-  function isoDate(d){var x=new Date(d);x.setHours(0,0,0,0);return x.toISOString().slice(0,10)}
+  function isoDate(d){var x=new Date(d);x.setHours(0,0,0,0);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')}
   function loadCheckins(){try{return JSON.parse(localStorage.getItem(CHECKIN_KEY)||'[]')}catch(e){return[]}}
   function saveCheckin(){try{var iso=isoDate(new Date());var list=loadCheckins();if(list.indexOf(iso)<0){list.push(iso);localStorage.setItem(CHECKIN_KEY,JSON.stringify(list))}}catch(e){}}
-  function calcStreak(){var set=new Set(loadCheckins());var n=0;var d=new Date();d.setHours(0,0,0,0);while(set.has(isoDate(d))){n++;d.setDate(d.getDate()-1)}return n}
+  function calcStreak(){var set=new Set(loadCheckins());if(!set.size)return 0;var today=new Date();today.setHours(0,0,0,0);var y=new Date(today);y.setDate(y.getDate()-1);var cur=set.has(isoDate(today))?new Date(today):set.has(isoDate(y))?new Date(y):null;if(!cur)return 0;var n=0;while(set.has(isoDate(cur))){n++;cur.setDate(cur.getDate()-1)}return n}
 
   function loadCoverPref(){try{var s=localStorage.getItem(COVER_KEY);if(s==='pink'||s==='black')coverColor=s}catch(e){}}
   function updateCoverToggleLabel(){var lbl=document.getElementById('gt-cover-toggle-label');if(lbl)lbl.textContent=coverColor==='black'?'Switch to pink cover':'Switch to black cover'}

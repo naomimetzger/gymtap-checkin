@@ -303,7 +303,13 @@
       function isoDate(d) {
         var x = new Date(d);
         x.setHours(0, 0, 0, 0);
-        return x.toISOString().slice(0, 10);
+        return (
+          x.getFullYear() +
+          "-" +
+          String(x.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(x.getDate()).padStart(2, "0")
+        );
       }
 
       function recordCheckin() {

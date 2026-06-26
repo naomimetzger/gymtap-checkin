@@ -51,8 +51,8 @@
     .pp-nav button.act{color:var(--burg)}
     .pp-pageno{position:absolute;top:14px;right:16px;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--muted);z-index:2}
     #s-cover{background:#ECE7DB}
-    .gt-cover-stage{position:relative;width:min(75vw,340px);aspect-ratio:240/280;perspective:1700px;margin:0 auto}
-    .gt-cover{position:absolute;inset:0;transform-origin:left center;transition:transform 1.15s cubic-bezier(.6,.02,.2,1);cursor:pointer;z-index:3;backface-visibility:hidden;background:transparent;border:none;box-shadow:none;overflow:visible}
+    .gt-cover-stage{position:relative;width:min(75vw,340px);aspect-ratio:664/911;perspective:1700px;margin:0 auto;display:flex;align-items:center;justify-content:center}
+    .gt-cover{position:relative;width:100%;height:100%;transform-origin:left center;transition:transform 1.15s cubic-bezier(.6,.02,.2,1);cursor:pointer;z-index:3;backface-visibility:hidden;background:transparent;border:none;box-shadow:none;overflow:visible;display:flex;align-items:center;justify-content:center}
     .gt-cover img{width:100%;height:100%;object-fit:contain;display:block;background:transparent;filter:drop-shadow(0 12px 28px rgba(44,44,42,.2))}
     .gt-cover img#gt-cover-img{transition:opacity .35s ease}
     .gt-cover img#gt-cover-img.fade{opacity:0}
@@ -87,11 +87,11 @@
       <div class="pp-sub" style="margin-bottom:16px;" id="gt-cover-hint">tap your passport to open</div>
       <div class="gt-cover-stage">
         <div class="gt-cover" id="gt-cover" onclick="gtOpenCover()">
-          <img id="gt-cover-img" src="/passport-cover-black.png" alt="Gym Passport cover" width="340" height="397" />
+          <img id="gt-cover-img" src="/passport-cover-pink.png" alt="Gym Passport cover" width="664" height="911" />
         </div>
       </div>
     </div>
-    <button type="button" class="pp-cover-toggle" id="gt-cover-toggle" onclick="gtToggleCover()"><i class="ti ti-palette" style="font-size:14px;" aria-hidden="true"></i><span id="gt-cover-toggle-label">Switch to pink cover</span></button>
+    <button type="button" class="pp-cover-toggle" id="gt-cover-toggle" onclick="gtToggleCover()"><i class="ti ti-palette" style="font-size:14px;" aria-hidden="true"></i><span id="gt-cover-toggle-label">Switch to black cover</span></button>
   </div>
 
   <div class="gt-screen" id="s-name" style="padding:24px;justify-content:center;"><div class="pp-pageno">PAGE 01</div>
@@ -204,7 +204,7 @@
   var CHECKIN_KEY='gymtap-checkins';
   var COVER_KEY='gymtap-passport-cover';
   var COVER_SRC={pink:'/passport-cover-pink.png',black:'/passport-cover-black.png'};
-  var coverColor='black';
+  var coverColor='pink';
   var state={name:'',gym:'',passportNo:'',days:new Set(),streak:0,doneToday:false,lifts:[],photoSrc:null},count=0,day=25;
   var nfcAbort=null,nfcReader=null;
   var DAYF=['MON','TUE','WED','THU','FRI','SAT','SUN'];

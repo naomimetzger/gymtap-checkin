@@ -253,16 +253,22 @@
           </svg>
         </div>
       </div>
+      <a href="/passport.html?checkedin=1" id="passport-link" class="btn" style="display:none;margin-top:18px;text-decoration:none;text-align:center">Back to passport</a>
     </section>
   </main>
 
   <script>
     (function () {
+      var CHECKIN_KEY = "gymtap-checkins";
       var params = new URLSearchParams(window.location.search);
       var fromNfc =
         params.has("nfc") ||
         params.get("from") === "nfc" ||
         params.get("source") === "nfc";
+      var fromPassport = params.get("from") === "passport";
+      var directSelfie =
+        params.get("step") === "selfie" ||
+        window.location.hash === "#selfie";
 
       var GYM = {
         name: params.get("gym") || "PureGym Leicester",
@@ -293,6 +299,23 @@
       var stampHint = document.getElementById("stamp-hint");
 
       gymNameEl.textContent = GYM.name;
+
+      function isoDate(d) {
+        var x = new Date(d);
+        x.setHours(0, 0, 0, 0);
+        return x.toISOString().slice(0, 10);
+      }
+
+      function recordCheckin() {
+        try {
+          var iso = isoDate(new Date());
+          var list = JSON.parse(localStorage.getItem(CHECKIN_KEY) || "[]");
+          if (list.indexOf(iso) === -1) {
+            list.push(iso);
+            localStorage.setItem(CHECKIN_KEY, JSON.stringify(list));
+          }
+        } catch (e) {}
+      }
 
       function show(id) {
         document.querySelectorAll(".scr").forEach(function (s) {
@@ -421,8 +444,12 @@
       }
 
       function finish() {
+        recordCheckin();
         buildPass();
         show("s-done");
+        if (fromPassport) {
+          document.getElementById("passport-link").style.display = "block";
+        }
         requestAnimationFrame(placeStampCenter);
       }
 
@@ -486,7 +513,13 @@
         placeStamp(e.clientX - r.left, e.clientY - r.top);
       });
 
-      if (fromNfc) {
+      if (fromNfc && directSelfie) {
+        verified = true;
+        verifyTagEl.textContent = "NFC tap confirmed";
+        document.querySelector("#s-start .sub").textContent =
+          "NFC tap detected — snap a selfie to earn your stamp.";
+        gotoSelfie();
+      } else if (fromNfc) {
         document.querySelector("#s-start .sub").textContent =
           "NFC tap detected — confirming check-in and stamping your passport.";
         start();

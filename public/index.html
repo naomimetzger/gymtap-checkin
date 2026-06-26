@@ -62,7 +62,7 @@
     .pp-nav button.act{color:var(--burg)}
     .pp-pageno{position:absolute;top:14px;right:16px;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--muted);z-index:2}
     #s-cover{background:#ECE7DB}
-    .gt-cover-stage{position:relative;width:min(75vw,340px);aspect-ratio:664/911;perspective:1700px;margin:0 auto;display:flex;align-items:center;justify-content:center}
+    .gt-cover-stage{position:relative;width:min(75vw,340px);aspect-ratio:664/911;perspective:1700px;margin:0 auto;margin-left:calc(50% - min(37.5vw,170px) - 14px);display:flex;align-items:center;justify-content:center}
     .gt-cover{position:relative;width:100%;height:100%;transform-origin:left center;transition:transform 1.15s cubic-bezier(.6,.02,.2,1);cursor:pointer;z-index:3;backface-visibility:hidden;background:transparent;border:none;box-shadow:none;overflow:visible;display:flex;align-items:center;justify-content:center}
     .gt-cover img{width:100%;height:100%;object-fit:contain;display:block;background:transparent;filter:drop-shadow(0 12px 28px rgba(44,44,42,.2))}
     .gt-cover img#gt-cover-img{transition:opacity .35s ease}
@@ -78,16 +78,24 @@
     .gt-dchip{touch-action:none;user-select:none;padding:11px 15px;border:1.5px solid var(--line);border-radius:8px;background:#F4F0E6;font-family:var(--font-mono);font-size:13px;color:var(--ink);cursor:grab}
     .gt-sw{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);cursor:pointer;padding:0}
     .gt-sw.on{outline:2px solid var(--ink);outline-offset:2px}
-    @keyframes gt-pulse{0%,100%{transform:scale(1);border-color:var(--line);box-shadow:0 0 0 0 rgba(90,23,34,.25)}50%{transform:scale(1.04);border-color:var(--burg);box-shadow:0 0 0 14px rgba(90,23,34,0)}}
-    .gt-ring--pulse{animation:gt-pulse 1.8s ease-in-out infinite;border-color:var(--burg)}
-    .gt-ring--ok{border-color:#2E8B57;animation:none;transform:scale(1.05)}
+    .gt-nfc-radar{position:relative;width:196px;height:196px;display:flex;align-items:center;justify-content:center;margin-bottom:28px}
+    .gt-nfc-core{width:76px;height:76px;border-radius:50%;border:2.5px solid var(--burg);background:rgba(244,240,230,.92);display:flex;align-items:center;justify-content:center;z-index:2;position:relative;transition:border-color .3s,background .3s}
+    .gt-nfc-core i{font-size:38px;color:var(--burg);transition:color .3s}
+    .gt-nfc-ring{position:absolute;border-radius:50%;border:2px solid var(--burg);width:88px;height:88px;opacity:0;pointer-events:none}
+    .gt-nfc-radar--active .gt-nfc-ring--1{animation:gt-nfc-expand 2.6s cubic-bezier(.25,.46,.45,.94) infinite}
+    .gt-nfc-radar--active .gt-nfc-ring--2{animation:gt-nfc-expand 2.6s cubic-bezier(.25,.46,.45,.94) infinite .87s}
+    .gt-nfc-radar--active .gt-nfc-ring--3{animation:gt-nfc-expand 2.6s cubic-bezier(.25,.46,.45,.94) infinite 1.74s}
+    @keyframes gt-nfc-expand{0%{transform:scale(.75);opacity:.55;border-color:var(--burg)}65%{opacity:.12}100%{transform:scale(2.15);opacity:0;border-color:var(--line)}}
+    .gt-nfc-radar--ok .gt-nfc-core{border-color:#2E8B57;background:rgba(46,139,87,.14)}
+    .gt-nfc-radar--ok .gt-nfc-core i{color:#2E8B57}
+    .gt-nfc-radar--ok .gt-nfc-ring{display:none}
     .gt-tap-status{font-family:var(--font-mono);font-size:11px;letter-spacing:.5px;color:var(--muted);margin-bottom:16px;max-width:260px;line-height:1.5}
     .gt-tap-cancel{background:none;border:none;color:var(--muted);font-family:var(--font-mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:8px;padding:8px}
     #s-name{justify-content:center}
   </style>
 </head>
 <body>
-<h2 class="sr-only">GymTap passport with editable details, a white ID page, drag-days-through-security onboarding, and passport colour options.</h2>
+<h2 class="sr-only">GymTap passport with editable details, a white ID page, tap-in check-in, and passport colour options.</h2>
 
 <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:16px;width:100%;max-width:380px;">
 <div id="gt-device" style="position:relative;max-width:340px;margin:0 auto;background:#ECE7DB;border-radius:24px;border:.5px solid var(--color-border-tertiary);overflow:hidden;display:flex;flex-direction:column;min-height:640px;">
@@ -106,7 +114,7 @@
   </div>
 
   <div class="gt-screen" id="s-name" style="padding:24px;justify-content:center;"><div class="pp-pageno">PAGE 01</div>
-    <div class="pp-step">first page · 1 of 4</div>
+    <div class="pp-step">first page · 1 of 3</div>
     <div class="pp-h" style="margin-bottom:22px;">Set up your passport</div>
     <span class="pp-label">Given names</span>
     <input id="gt-name" class="pp-input" placeholder="Full name" style="margin-bottom:16px;" />
@@ -116,7 +124,7 @@
   </div>
 
   <div class="gt-screen" id="s-photo" style="padding:24px;justify-content:center;align-items:center;text-align:center;"><div class="pp-pageno">PAGE 02</div>
-    <div class="pp-step">2 of 4</div>
+    <div class="pp-step">2 of 3</div>
     <div class="pp-h" style="margin-bottom:8px;">Your passport photo</div>
     <div class="pp-sub" style="margin-bottom:22px;">Take one now or upload your own — we'll make it black &amp; white.</div>
     <div id="gt-vf" style="width:120px;height:150px;border-radius:8px;border:2px dashed var(--line);display:flex;align-items:center;justify-content:center;margin-bottom:22px;overflow:hidden;background:#F4F0E6;"><i class="ti ti-camera" style="font-size:38px;color:var(--muted);" aria-hidden="true"></i></div>
@@ -130,25 +138,12 @@
     <div style="text-align:center;" class="pp-h">Your passport is ready</div>
     <div style="text-align:center;margin:4px 0 18px;" class="pp-sub">Welcome aboard, traveller.</div>
     <div id="gt-reveal-card"></div>
-    <button class="pp-btn" style="margin-top:20px;" onclick="gtShow('s-days')">Looks great</button>
+    <button class="pp-btn" style="margin-top:20px;" onclick="gtShow('s-location')">Looks great</button>
   </div>
 
-  <div class="gt-screen" id="s-days" style="padding:30px 22px;"><div class="pp-pageno">PAGE 04</div>
-    <div class="pp-step">3 of 4</div>
-    <div class="pp-h" style="margin-bottom:6px;">Which days do you train?</div>
-    <div class="pp-sub" style="margin-bottom:16px;">drag each day through security to add it 🛂</div>
-    <div id="gt-day-pool" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px;min-height:46px;"></div>
-    <div id="gt-bin" style="border:2px dashed var(--line);border-radius:12px;padding:14px;text-align:center;background:#F1ECE0;transition:all .2s;margin-bottom:14px;">
-      <div class="pp-label" style="margin:0 0 8px;">security · drag days through</div>
-      <div id="gt-slot" style="height:36px;border-radius:6px;background:#2C2C2A;display:flex;align-items:center;justify-content:center;color:#7FD1B0;font-family:var(--font-mono);font-size:11px;letter-spacing:3px;">⌁  SCANNER  ⌁</div>
-    </div>
-    <div id="gt-cleared" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:28px;margin-bottom:18px;"></div>
-    <button class="pp-btn" onclick="gtShow('s-location')">Continue</button>
-  </div>
-
-  <div class="gt-screen" id="s-location" style="padding:30px 24px;justify-content:center;align-items:center;text-align:center;"><div class="pp-pageno">PAGE 05</div>
+  <div class="gt-screen" id="s-location" style="padding:30px 24px;justify-content:center;align-items:center;text-align:center;"><div class="pp-pageno">PAGE 04</div>
     <i class="ti ti-map-pin" style="font-size:40px;color:var(--burg);margin-bottom:16px;" aria-hidden="true"></i>
-    <div class="pp-step">4 of 4</div>
+    <div class="pp-step">3 of 3</div>
     <div class="pp-h" style="margin-bottom:10px;">Turn on location</div>
     <div class="pp-sub" style="margin-bottom:28px;">We stamp your passport only when you're really at the gym.</div>
     <button class="pp-btn" onclick="gtFinish()">Enable location</button>
@@ -161,20 +156,24 @@
       <span class="pp-label">Today's session</span>
       <div style="display:flex;align-items:center;justify-content:space-between;"><span id="gt-today-val" style="font-family:var(--font-serif);font-size:17px;color:var(--ink);">Ready to depart</span><i class="ti ti-arrow-right" style="font-size:18px;color:var(--burg);" aria-hidden="true"></i></div>
     </div>
-    <button class="pp-btn" style="margin-bottom:10px;" onclick="gtStartTapIn()"><i class="ti ti-nfc" style="font-size:16px;vertical-align:-3px;margin-right:6px;" aria-hidden="true"></i>Tap in</button>
     <button class="pp-btn-out" style="margin-bottom:20px;" onclick="gtTab('s-log')"><i class="ti ti-pencil-plus" style="font-size:15px;vertical-align:-2px;margin-right:6px;" aria-hidden="true"></i><span id="gt-log-txt">Log workout</span></button>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><span class="pp-label" style="margin:0;">This week</span><span style="font-family:var(--font-mono);font-size:12px;color:var(--burg);"><i class="ti ti-flame" style="font-size:14px;vertical-align:-2px;" aria-hidden="true"></i> <span id="gt-streak">2</span> day streak</span></div>
     <div style="display:flex;gap:4px;margin-bottom:24px;" id="gt-week"></div>
     <div class="pp-nav" id="nav-home"></div>
   </div>
 
-  <div class="gt-screen" id="s-tapin" style="padding:24px 20px 0;"><div class="pp-pageno">CHECK-IN</div>
+  <div class="gt-screen" id="s-tapin" style="padding:24px 20px 0;"><div class="pp-pageno">TAP IN</div>
     <div id="gt-tap-body" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
-      <div id="gt-ring" style="width:140px;height:140px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;margin-bottom:24px;transition:all .3s;"><i class="ti ti-nfc" id="gt-ring-icon" style="font-size:56px;color:var(--burg);" aria-hidden="true"></i></div>
-      <div class="pp-h" id="gt-tap-title" style="margin-bottom:8px;">Hold your phone to the NFC chip</div>
-      <div class="pp-sub" id="gt-tap-sub" style="margin-bottom:12px;max-width:260px;">Keep this screen open and tap the GymTap sticker to check in.</div>
+      <div class="gt-nfc-radar gt-nfc-radar--active" id="gt-nfc-radar">
+        <div class="gt-nfc-ring gt-nfc-ring--1"></div>
+        <div class="gt-nfc-ring gt-nfc-ring--2"></div>
+        <div class="gt-nfc-ring gt-nfc-ring--3"></div>
+        <div class="gt-nfc-core"><i class="ti ti-nfc" id="gt-ring-icon" aria-hidden="true"></i></div>
+      </div>
+      <div class="pp-h" id="gt-tap-title" style="margin-bottom:8px;">Tap in</div>
+      <div class="pp-sub" id="gt-tap-sub" style="margin-bottom:12px;max-width:260px;">Hold your phone to the GymTap NFC chip at the gym.</div>
       <p class="gt-tap-status" id="gt-tap-status" aria-live="polite"></p>
-      <button type="button" class="gt-tap-cancel" id="gt-tap-cancel" onclick="gtCancelTapIn()">Cancel</button>
+      <button type="button" class="gt-tap-cancel" id="gt-tap-cancel" onclick="gtCancelTapIn()">View stamps</button>
     </div>
     <div class="pp-nav" id="nav-tapin"></div>
   </div>
@@ -217,7 +216,7 @@
   var COVER_KEY='gymtap-passport-cover';
   var COVER_SRC={pink:'/passport-cover-pink.png',black:'/passport-cover-black.png'};
   var coverColor='pink';
-  var state={name:'',gym:'',passportNo:'',days:new Set(),streak:0,doneToday:false,lifts:[],photoSrc:null},count=0,day=25;
+  var state={name:'',gym:'',passportNo:'',streak:0,doneToday:false,lifts:[],photoSrc:null},count=0,day=25;
   var nfcAbort=null,nfcReader=null;
   var DAYF=['MON','TUE','WED','THU','FRI','SAT','SUN'];
   var DESIGNS=[{shape:'circle',color:'#B23A3A',top:'ARRIVED',mid:'PGY',ic:'ti-barbell'},{shape:'rect',color:'#2E5FA3',top:'CHECK-IN',mid:'GYM',ic:'ti-nfc'},{shape:'circle',color:'#2E8B57',top:'5AM CLUB',mid:'PGY',ic:'ti-sunrise'},{shape:'rect',color:'#7A4FA0',top:'DEPARTED',mid:'HOME',ic:'ti-plane'}];
@@ -225,6 +224,7 @@
   function isoDate(d){var x=new Date(d);x.setHours(0,0,0,0);return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')}
   function loadCheckins(){try{return JSON.parse(localStorage.getItem(CHECKIN_KEY)||'[]')}catch(e){return[]}}
   function saveCheckin(){try{var iso=isoDate(new Date());var list=loadCheckins();if(list.indexOf(iso)<0){list.push(iso);localStorage.setItem(CHECKIN_KEY,JSON.stringify(list))}}catch(e){}}
+  function hasCheckedInToday(){return new Set(loadCheckins()).has(isoDate(new Date()))}
   function calcStreak(){var set=new Set(loadCheckins());if(!set.size)return 0;var today=new Date();today.setHours(0,0,0,0);var y=new Date(today);y.setDate(y.getDate()-1);var cur=set.has(isoDate(today))?new Date(today):set.has(isoDate(y))?new Date(y):null;if(!cur)return 0;var n=0;while(set.has(isoDate(cur))){n++;cur.setDate(cur.getDate()-1)}return n}
 
   function loadCoverPref(){try{var s=localStorage.getItem(COVER_KEY);if(s==='pink'||s==='black')coverColor=s}catch(e){}}
@@ -239,15 +239,16 @@
   document.getElementById('nav-home').innerHTML=nav('s-home');document.getElementById('nav-tapin').innerHTML=nav('s-tapin');document.getElementById('nav-stamps').innerHTML=nav('s-stamps');
 
   function checkinUrl(){var q='?nfc=1&step=selfie&from=passport';if(state.gym)q+='&gym='+encodeURIComponent(state.gym);return '/checkin.html'+q}
-  function nfcSupported(){return typeof NDEFReader!=='undefined'}
+  function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1)}
+  function nfcWebSupported(){return typeof NDEFReader!=='undefined'}
 
   function gtResetTapUI(){
-    var ring=document.getElementById('gt-ring');
-    ring.className='';
-    ring.style.cssText='width:140px;height:140px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;margin-bottom:24px;transition:all .3s;';
+    var radar=document.getElementById('gt-nfc-radar');
+    if(!radar)return;
+    radar.className='gt-nfc-radar gt-nfc-radar--active';
     document.getElementById('gt-ring-icon').className='ti ti-nfc';
-    document.getElementById('gt-tap-title').textContent='Hold your phone to the NFC chip';
-    document.getElementById('gt-tap-sub').textContent='Keep this screen open and tap the GymTap sticker to check in.';
+    document.getElementById('gt-tap-title').textContent='Tap in';
+    document.getElementById('gt-tap-sub').textContent='Hold your phone to the GymTap NFC chip at the gym.';
     document.getElementById('gt-tap-status').textContent='';
     document.getElementById('gt-tap-cancel').style.display='';
   }
@@ -255,14 +256,23 @@
   function gtStopNfcScan(){
     if(nfcAbort){try{nfcAbort.abort()}catch(e){}nfcAbort=null}
     if(nfcReader&&nfcReader.onreading){nfcReader.onreading=null}
-    var ring=document.getElementById('gt-ring');
-    if(ring)ring.classList.remove('gt-ring--pulse');
+    var radar=document.getElementById('gt-nfc-radar');
+    if(radar&&!radar.classList.contains('gt-nfc-radar--ok'))radar.classList.remove('gt-nfc-radar--active');
+    if(checkinPoll){clearInterval(checkinPoll);checkinPoll=null}
+  }
+
+  var checkinPoll=null;
+  function gtPollCheckin(){
+    if(checkinPoll)return;
+    checkinPoll=setInterval(function(){
+      if(hasCheckedInToday()){gtStopNfcScan();gtWeek();document.getElementById('gt-today-val').textContent='Checked in';gtShow('s-home')}
+    },800);
   }
 
   function gtOnNfcDetected(){
     gtStopNfcScan();
-    var ring=document.getElementById('gt-ring');
-    ring.classList.add('gt-ring--ok');
+    var radar=document.getElementById('gt-nfc-radar');
+    radar.classList.add('gt-nfc-radar--ok');
     document.getElementById('gt-ring-icon').className='ti ti-circle-check';
     document.getElementById('gt-tap-title').textContent='Chip detected';
     document.getElementById('gt-tap-sub').textContent='Opening selfie check-in…';
@@ -271,28 +281,52 @@
     setTimeout(function(){window.location.href=checkinUrl()},450);
   }
 
+  function gtNfcErrorMessage(err){
+    if(!err)return 'NFC unavailable';
+    if(err.name==='NotAllowedError')return 'NFC permission denied — allow NFC in Chrome settings';
+    if(err.name==='NotSupportedError')return 'NFC not supported in this browser';
+    if(err.name==='NotReadableError')return 'NFC busy — close other apps using NFC and try again';
+    return err.message||'NFC unavailable';
+  }
+
   function gtStartNfcScan(){
     gtStopNfcScan();
-    var ring=document.getElementById('gt-ring');
+    var radar=document.getElementById('gt-nfc-radar');
     var status=document.getElementById('gt-tap-status');
-    ring.classList.add('gt-ring--pulse');
-    if(!nfcSupported()){
-      status.textContent='iPhone: hold your phone to the sticker — Safari will open check-in. Android: scanning starts automatically when supported.';
+    var title=document.getElementById('gt-tap-title');
+    var sub=document.getElementById('gt-tap-sub');
+    radar.classList.add('gt-nfc-radar--active');
+    gtPollCheckin();
+
+    if(isIOS()){
+      title.textContent='Tap in';
+      sub.textContent='Hold the top of your iPhone to the GymTap sticker.';
+      status.textContent='Safari will open check-in when the chip is detected.';
       return;
     }
+
+    if(!nfcWebSupported()){
+      title.textContent='Tap in';
+      sub.textContent='Hold your phone to the GymTap NFC chip at the gym.';
+      status.textContent='Tap the sticker to open check-in in your browser.';
+      return;
+    }
+
+    title.textContent='Tap in';
+    sub.textContent='Hold your phone to the GymTap NFC chip at the gym.';
     status.textContent='Listening for NFC chip…';
     nfcReader=new NDEFReader();
+    nfcReader.onreading=function(){gtOnNfcDetected()};
     nfcAbort=new AbortController();
-    nfcReader.scan({signal:nfcAbort.signal}).then(function(){
-      nfcReader.onreading=function(){gtOnNfcDetected()};
-    }).catch(function(err){
+    nfcReader.scan({signal:nfcAbort.signal}).catch(function(err){
       if(err&&err.name==='AbortError')return;
-      status.textContent='NFC unavailable — hold your phone to the sticker to open check-in in your browser.';
+      status.textContent=gtNfcErrorMessage(err)+'. Hold your phone to the sticker to open check-in.';
     });
   }
 
-  window.gtStartTapIn=function(){gtShow('s-tapin');gtResetTapUI();gtStartNfcScan()};
-  window.gtCancelTapIn=function(){gtStopNfcScan();gtTab('s-home')};
+  function gtGoTapIn(){gtShow('s-tapin');gtResetTapUI();gtStartNfcScan()}
+  window.gtStartTapIn=gtGoTapIn;
+  window.gtCancelTapIn=function(){gtStopNfcScan();gtTab('s-stamps')};
 
   window.gtColour=function(btn){var c=btn.getAttribute('data-c');document.getElementById('gt-device').style.setProperty('--burg',c);document.querySelectorAll('.gt-sw').forEach(function(s){s.classList.remove('on')});btn.classList.add('on')};
 
@@ -305,29 +339,24 @@
   function gtPhotoDone(){var b=document.getElementById('gt-photo-btn');b.textContent='Create my passport';b.removeAttribute('for');b.setAttribute('onclick','gtReveal()')}
   window.gtReveal=function(){document.getElementById('gt-reveal-card').innerHTML=passportID();gtShow('s-reveal')};
   function fmtName(){return (state.name||'New Member').toUpperCase()}
-  function daysStr(){if(!state.days.size)return '—';return Array.from(state.days).map(Number).sort().map(function(i){return DAYF[i]}).join(' ')}
   function passportID(){return '<div style="background:#FFFFFF;border:1px solid #E2E2E2;border-left:6px solid var(--burg);border-radius:6px;padding:14px;">'+
       '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;"><div><div style="font-family:var(--font-serif);font-size:18px;color:#2C2C2A;">Gym Passport</div><div style="font-family:var(--font-mono);font-size:9px;letter-spacing:3px;color:#8a8780;">UNITED KINGDOM</div></div><i class="ti ti-plane-tilt" style="font-size:18px;color:var(--burg);" aria-hidden="true"></i></div>'+
       '<div style="display:flex;gap:12px;"><div style="border:1px solid #E2E2E2;">'+photoEl(88)+'</div><div style="flex:1;border:1px solid #E2E2E2;border-bottom:none;">'+
       '<div style="padding:6px 9px;"><div class="gt-flab">Name</div><div class="gt-pval">'+fmtName()+'</div></div>'+
       '<div style="padding:6px 9px;border-top:1px solid #E2E2E2;"><div class="gt-flab">Passport no</div><div class="gt-pval">'+state.passportNo+'</div></div>'+
       '<div style="padding:6px 9px;border-top:1px solid #E2E2E2;"><div class="gt-flab">Home gym</div><div class="gt-pval">'+state.gym.toUpperCase()+'</div></div></div></div>'+
-      '<div style="border:1px solid #E2E2E2;border-top:none;display:flex;"><div style="padding:6px 9px;flex:1;"><div class="gt-flab">Training days</div><div class="gt-pval">'+daysStr()+'</div></div><div style="padding:6px 9px;border-left:1px solid #E2E2E2;"><div class="gt-flab">Class</div><div class="gt-pval">ROOKIE</div></div></div>'+
+      '<div style="border:1px solid #E2E2E2;border-top:none;display:flex;"><div style="padding:6px 9px;flex:1;"><div class="gt-flab">Class</div><div class="gt-pval">ROOKIE</div></div></div>'+
       '<div style="border:1px solid #E2E2E2;border-top:none;padding:6px 9px;font-family:var(--font-mono);font-size:11px;letter-spacing:1px;color:#2C2C2A;overflow:hidden;white-space:nowrap;">P&lt;GBR'+fmtName().replace(/ /g,'&lt;')+'&lt;&lt;&lt;&lt;&lt;&lt;</div></div>'}
 
-  var dragging=null,ox=0,oy=0;
-  function startDrag(e){dragging=e.currentTarget;dragging.setPointerCapture(e.pointerId);ox=e.clientX;oy=e.clientY;dragging.style.transition='none';dragging.style.zIndex=60;dragging.style.position='relative';dragging.dataset.dx=0;dragging.dataset.dy=0;dragging.style.cursor='grabbing'}
-  function moveDrag(e){if(!dragging)return;var dx=e.clientX-ox,dy=e.clientY-oy;dragging.dataset.dx=dx;dragging.dataset.dy=dy;dragging.style.transform='translate('+dx+'px,'+dy+'px) scale(1.06)'}
-  function endDrag(e){if(!dragging)return;var chip=dragging;dragging=null;chip.style.cursor='grab';var bin=document.getElementById('gt-bin').getBoundingClientRect();var cr=chip.getBoundingClientRect();var cx=cr.left+cr.width/2,cy=cr.top+cr.height/2;
-    if(cx>bin.left&&cx<bin.right&&cy>bin.top&&cy<bin.bottom){processDay(chip,bin,cr)}else{chip.style.transition='transform .2s';chip.style.transform='translate(0,0)'}}
-  function processDay(chip,bin,cr){var cx=cr.left+cr.width/2,cy=cr.top+cr.height/2;var tx=(bin.left+bin.width/2)-cx+parseFloat(chip.dataset.dx||0);var ty=(bin.top+bin.height/2)-cy+parseFloat(chip.dataset.dy||0);chip.style.transition='transform .35s,opacity .35s';chip.style.transform='translate('+tx+'px,'+ty+'px) scale(.15)';chip.style.opacity='0';flashBin();var d=chip.dataset.d;state.days.add(d);setTimeout(function(){chip.remove();addCleared(d)},340)}
-  function flashBin(){var bin=document.getElementById('gt-bin'),slot=document.getElementById('gt-slot');bin.style.borderColor='#2E8B57';bin.style.background='#E6F4EC';slot.style.color='#fff';slot.style.background='#2E8B57';slot.textContent='✓  CLEARED';setTimeout(function(){bin.style.borderColor='var(--line)';bin.style.background='#F1ECE0';slot.style.background='#2C2C2A';slot.style.color='#7FD1B0';slot.textContent='⌁  SCANNER  ⌁'},650)}
-  function addCleared(d){var c=document.getElementById('gt-cleared');var pill=document.createElement('div');pill.style.cssText='padding:6px 10px;border-radius:20px;background:var(--burg);color:#F4EFE3;font-family:var(--font-mono);font-size:11px;letter-spacing:1px;display:flex;align-items:center;gap:4px;';pill.innerHTML='<i class="ti ti-check" style="font-size:12px;" aria-hidden="true"></i>'+DAYF[d];c.appendChild(pill)}
-  function buildDays(){var pool=document.getElementById('gt-day-pool');pool.innerHTML='';DAYF.forEach(function(lab,i){var chip=document.createElement('div');chip.className='gt-dchip';chip.dataset.d=i;chip.textContent=lab;chip.addEventListener('pointerdown',startDrag);chip.addEventListener('pointermove',moveDrag);chip.addEventListener('pointerup',endDrag);pool.appendChild(chip)})}
-  buildDays();
-
-  window.gtFinish=function(){document.getElementById('gt-greet').textContent='Hi '+state.name.split(' ')[0];gtWeek();gtShow('s-home')};
+  function gtPostOnboarding(){
+    document.getElementById('gt-greet').textContent='Hi '+state.name.split(' ')[0];
+    gtWeek();
+    if(hasCheckedInToday())gtShow('s-home');
+    else gtGoTapIn();
+  }
+  window.gtFinish=gtPostOnboarding;
   window.gtTab=function(id){
+    if((id==='s-home'||id==='s-log')&&!hasCheckedInToday()){gtGoTapIn();return}
     if(id!=='s-tapin')gtStopNfcScan();
     if(id==='s-home')gtWeek();
     gtShow(id);
@@ -349,6 +378,8 @@
 
   var p=new URLSearchParams(window.location.search);
   if(p.get('checkedin')==='1'){saveCheckin();gtWeek();gtShow('s-home');history.replaceState(null,'',window.location.pathname)}
+  else if(hasCheckedInToday()&&localStorage.getItem('gymtap-onboarded')==='1'){gtWeek();gtShow('s-home')}
+  window.gtFinish=function(){try{localStorage.setItem('gymtap-onboarded','1')}catch(e){}gtPostOnboarding()};
 })();
 </script>
 </body>

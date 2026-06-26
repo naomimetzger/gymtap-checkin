@@ -62,7 +62,9 @@
     .pp-nav button.act{color:var(--burg)}
     .pp-pageno{position:absolute;top:14px;right:16px;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--muted);z-index:2}
     #s-cover{background:#ECE7DB}
-    .gt-cover-stage{position:relative;width:min(75vw,340px);aspect-ratio:664/911;perspective:1700px;margin:0 auto;margin-left:calc(50% - min(37.5vw,170px) - 14px);display:flex;align-items:center;justify-content:center}
+    .gt-cover-stage{position:relative;width:min(75vw,340px);aspect-ratio:664/911;perspective:1700px;margin:0 auto;display:flex;align-items:center;justify-content:center}
+    .pp-cover-tapin{margin-top:12px;width:100%;max-width:240px;display:none;align-items:center;justify-content:center;gap:8px}
+    #gt-cover-user{display:none;margin-bottom:12px;width:100%}
     .gt-cover{position:relative;width:100%;height:100%;transform-origin:left center;transition:transform 1.15s cubic-bezier(.6,.02,.2,1);cursor:pointer;z-index:3;backface-visibility:hidden;background:transparent;border:none;box-shadow:none;overflow:visible;display:flex;align-items:center;justify-content:center}
     .gt-cover img{width:100%;height:100%;object-fit:contain;display:block;background:transparent;filter:drop-shadow(0 12px 28px rgba(44,44,42,.2))}
     .gt-cover img#gt-cover-img{transition:opacity .35s ease}
@@ -103,6 +105,10 @@
 
   <div class="gt-screen on" id="s-cover" style="flex:1;align-items:center;padding:30px 24px 24px;text-align:center;">
     <div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;">
+      <div id="gt-cover-user">
+        <div class="pp-h" id="gt-cover-name" style="margin-bottom:4px;"></div>
+        <div class="pp-sub" id="gt-cover-passport" style="font-family:var(--font-mono);letter-spacing:1px;"></div>
+      </div>
       <div class="pp-sub" style="margin-bottom:16px;" id="gt-cover-hint">tap your passport to open</div>
       <div class="gt-cover-stage">
         <div class="gt-cover" id="gt-cover" onclick="gtOpenCover()">
@@ -110,6 +116,7 @@
         </div>
       </div>
     </div>
+    <button type="button" class="pp-btn pp-cover-tapin" id="gt-cover-tapin" onclick="gtCoverTapIn()"><i class="ti ti-nfc" style="font-size:16px;" aria-hidden="true"></i>Tap in</button>
     <button type="button" class="pp-cover-toggle" id="gt-cover-toggle" onclick="gtToggleCover()"><i class="ti ti-palette" style="font-size:14px;" aria-hidden="true"></i><span id="gt-cover-toggle-label">Switch to black cover</span></button>
   </div>
 
@@ -156,6 +163,7 @@
       <span class="pp-label">Today's session</span>
       <div style="display:flex;align-items:center;justify-content:space-between;"><span id="gt-today-val" style="font-family:var(--font-serif);font-size:17px;color:var(--ink);">Ready to depart</span><i class="ti ti-arrow-right" style="font-size:18px;color:var(--burg);" aria-hidden="true"></i></div>
     </div>
+    <button class="pp-btn" style="margin-bottom:10px;" onclick="gtStartTapIn()"><i class="ti ti-nfc" style="font-size:16px;vertical-align:-3px;margin-right:6px;" aria-hidden="true"></i>Tap in</button>
     <button class="pp-btn-out" style="margin-bottom:20px;" onclick="gtTab('s-log')"><i class="ti ti-pencil-plus" style="font-size:15px;vertical-align:-2px;margin-right:6px;" aria-hidden="true"></i><span id="gt-log-txt">Log workout</span></button>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;"><span class="pp-label" style="margin:0;">This week</span><span style="font-family:var(--font-mono);font-size:12px;color:var(--burg);"><i class="ti ti-flame" style="font-size:14px;vertical-align:-2px;" aria-hidden="true"></i> <span id="gt-streak">2</span> day streak</span></div>
     <div style="display:flex;gap:4px;margin-bottom:24px;" id="gt-week"></div>
@@ -199,11 +207,6 @@
       <div style="position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(120,100,70,.05) 0 1px,transparent 1px 7px),repeating-linear-gradient(65deg,rgba(120,100,70,.05) 0 1px,transparent 1px 7px);"></div>
       <svg viewBox="0 0 200 200" style="position:absolute;inset:0;width:100%;height:100%;opacity:.07;" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#6B5B3A"/><ellipse cx="100" cy="100" rx="28" ry="70" fill="none" stroke="#6B5B3A"/><ellipse cx="100" cy="100" rx="55" ry="70" fill="none" stroke="#6B5B3A"/></svg>
     </div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin:14px 0 12px;"><span class="pp-label" style="margin:0;">passport colour</span>
-      <button class="gt-sw on" data-c="#5A1722" onclick="gtColour(this)" style="background:#5A1722"></button>
-      <button class="gt-sw" data-c="#1A1A1A" onclick="gtColour(this)" style="background:#1A1A1A"></button>
-      <button class="gt-sw" data-c="#E29CBB" onclick="gtColour(this)" style="background:#E29CBB"></button>
-    </div>
     <div class="pp-nav" id="nav-stamps"></div>
   </div>
 
@@ -213,10 +216,12 @@
 <script>
 (function(){
   var CHECKIN_KEY='gymtap-checkins';
+  var STAMPS_KEY='gymtap-stamps';
+  var PROFILE_KEY='gymtap-profile';
   var COVER_KEY='gymtap-passport-cover';
   var COVER_SRC={pink:'/passport-cover-pink.png',black:'/passport-cover-black.png'};
   var coverColor='pink';
-  var state={name:'',gym:'',passportNo:'',streak:0,doneToday:false,lifts:[],photoSrc:null},count=0,day=25;
+  var state={name:'',gym:'',passportNo:'',streak:0,doneToday:false,lifts:[],photoSrc:null};
   var nfcAbort=null,nfcReader=null;
   var DAYF=['MON','TUE','WED','THU','FRI','SAT','SUN'];
   var DESIGNS=[{shape:'circle',color:'#B23A3A',top:'ARRIVED',mid:'PGY',ic:'ti-barbell'},{shape:'rect',color:'#2E5FA3',top:'CHECK-IN',mid:'GYM',ic:'ti-nfc'},{shape:'circle',color:'#2E8B57',top:'5AM CLUB',mid:'PGY',ic:'ti-sunrise'},{shape:'rect',color:'#7A4FA0',top:'DEPARTED',mid:'HOME',ic:'ti-plane'}];
@@ -226,15 +231,24 @@
   function saveCheckin(){try{var iso=isoDate(new Date());var list=loadCheckins();if(list.indexOf(iso)<0){list.push(iso);localStorage.setItem(CHECKIN_KEY,JSON.stringify(list))}}catch(e){}}
   function hasCheckedInToday(){return new Set(loadCheckins()).has(isoDate(new Date()))}
   function calcStreak(){var set=new Set(loadCheckins());if(!set.size)return 0;var today=new Date();today.setHours(0,0,0,0);var y=new Date(today);y.setDate(y.getDate()-1);var cur=set.has(isoDate(today))?new Date(today):set.has(isoDate(y))?new Date(y):null;if(!cur)return 0;var n=0;while(set.has(isoDate(cur))){n++;cur.setDate(cur.getDate()-1)}return n}
+  function loadStamps(){try{return JSON.parse(localStorage.getItem(STAMPS_KEY)||'[]')}catch(e){return[]}}
+  function persistStamp(stamp){try{var list=loadStamps();list.push(stamp);localStorage.setItem(STAMPS_KEY,JSON.stringify(list))}catch(e){}}
+  function loadProfile(){try{var p=JSON.parse(localStorage.getItem(PROFILE_KEY)||'null');if(p&&p.onboarded)return p}catch(e){}return null}
+  function saveProfile(){try{localStorage.setItem(PROFILE_KEY,JSON.stringify({name:state.name,gym:state.gym,photo:state.photoSrc,passportId:state.passportNo,cover:coverColor,onboarded:true}));localStorage.setItem('gymtap-onboarded','1');localStorage.setItem(COVER_KEY,coverColor)}catch(e){}}
+  function applyProfile(p){state.name=p.name||'';state.gym=p.gym||'';state.photoSrc=p.photo||null;state.passportNo=p.passportId||'';if(p.cover==='pink'||p.cover==='black'){coverColor=p.cover;applyCover(false)}}
 
-  function loadCoverPref(){try{var s=localStorage.getItem(COVER_KEY);if(s==='pink'||s==='black')coverColor=s}catch(e){}}
+  function loadCoverPref(){try{var p=loadProfile();if(p&&p.cover){coverColor=p.cover;return}var s=localStorage.getItem(COVER_KEY);if(s==='pink'||s==='black')coverColor=s}catch(e){}}
   function updateCoverToggleLabel(){var lbl=document.getElementById('gt-cover-toggle-label');if(lbl)lbl.textContent=coverColor==='black'?'Switch to pink cover':'Switch to black cover'}
   function applyCover(animate){var img=document.getElementById('gt-cover-img');if(!img)return;if(animate){img.classList.add('fade');setTimeout(function(){img.src=COVER_SRC[coverColor];img.onload=function(){img.classList.remove('fade');img.onload=null}},180)}else{img.src=COVER_SRC[coverColor]}updateCoverToggleLabel()}
-  window.gtToggleCover=function(){coverColor=coverColor==='black'?'pink':'black';try{localStorage.setItem(COVER_KEY,coverColor)}catch(e){}applyCover(true)};
+  window.gtToggleCover=function(){coverColor=coverColor==='black'?'pink':'black';try{localStorage.setItem(COVER_KEY,coverColor);var p=loadProfile();if(p){p.cover=coverColor;localStorage.setItem(PROFILE_KEY,JSON.stringify(p))}}catch(e){}applyCover(true)};
   loadCoverPref();applyCover(false);
 
-  window.gtShow=function(id){document.querySelectorAll('.gt-screen').forEach(function(s){s.classList.remove('on')});document.getElementById(id).classList.add('on')};
-  window.gtOpenCover=function(){var c=document.getElementById('gt-cover');if(c.classList.contains('open'))return;c.classList.add('open');document.getElementById('gt-cover-hint').textContent='';setTimeout(function(){gtShow('s-name')},950)};
+  function showCoverReturnMode(){var c=document.getElementById('gt-cover');c.classList.remove('open');document.getElementById('gt-cover-user').style.display='block';document.getElementById('gt-cover-name').textContent=state.name||'Traveller';document.getElementById('gt-cover-passport').textContent=state.passportNo||'';document.getElementById('gt-cover-hint').textContent='Your passport';document.getElementById('gt-cover-tapin').style.display='inline-flex';c.onclick=null;c.style.cursor='default'}
+  function showCoverFirstMode(){document.getElementById('gt-cover-user').style.display='none';document.getElementById('gt-cover-tapin').style.display='none';document.getElementById('gt-cover-hint').textContent='tap your passport to open';var c=document.getElementById('gt-cover');c.onclick=gtOpenCover;c.style.cursor='pointer'}
+  window.gtCoverTapIn=function(){document.getElementById('gt-greet').textContent='Hi '+(state.name||'there').split(' ')[0];gtWeek();if(hasCheckedInToday())document.getElementById('gt-today-val').textContent='Checked in';gtTab('s-home')};
+
+  window.gtShow=function(id){document.querySelectorAll('.gt-screen').forEach(function(s){s.classList.remove('on')});document.getElementById(id).classList.add('on');if(id==='s-stamps')gtRenderStamps()};
+  window.gtOpenCover=function(){if(loadProfile())return;var c=document.getElementById('gt-cover');if(c.classList.contains('open'))return;c.classList.add('open');document.getElementById('gt-cover-hint').textContent='';setTimeout(function(){gtShow('s-name')},950)};
   function nav(active){var items=[['s-home','ti-home','Home'],['s-tapin','ti-nfc','Tap in'],['s-stamps','ti-stamp','Stamps']];return items.map(function(it){return '<button class="'+(it[0]===active?'act':'')+'" onclick="gtTab(\''+it[0]+'\')"><i class="ti '+it[1]+'" style="font-size:19px;" aria-hidden="true"></i>'+it[2]+'</button>'}).join('')}
   document.getElementById('nav-home').innerHTML=nav('s-home');document.getElementById('nav-tapin').innerHTML=nav('s-tapin');document.getElementById('nav-stamps').innerHTML=nav('s-stamps');
 
@@ -326,9 +340,7 @@
 
   function gtGoTapIn(){gtShow('s-tapin');gtResetTapUI();gtStartNfcScan()}
   window.gtStartTapIn=gtGoTapIn;
-  window.gtCancelTapIn=function(){gtStopNfcScan();gtTab('s-stamps')};
-
-  window.gtColour=function(btn){var c=btn.getAttribute('data-c');document.getElementById('gt-device').style.setProperty('--burg',c);document.querySelectorAll('.gt-sw').forEach(function(s){s.classList.remove('on')});btn.classList.add('on')};
+  window.gtCancelTapIn=function(){gtStopNfcScan();gtTab('s-home')};
 
   window.gtNameNext=function(){state.name=document.getElementById('gt-name').value.trim()||'New Member';state.gym=document.getElementById('gt-gym').value.trim()||'PureGym Leicester';state.passportNo='GT '+Math.floor(1000+Math.random()*9000);gtShow('s-photo')};
   function photoSVG(sz){return '<svg viewBox="0 0 100 120" width="'+sz+'" height="'+(sz*1.2)+'"><rect width="100" height="120" fill="#D9D5CC"/><circle cx="50" cy="44" r="22" fill="#9A958B"/><path d="M14 120 C14 88 36 74 50 74 C64 74 86 88 86 120 Z" fill="#9A958B"/></svg>'}
@@ -348,15 +360,9 @@
       '<div style="border:1px solid #E2E2E2;border-top:none;display:flex;"><div style="padding:6px 9px;flex:1;"><div class="gt-flab">Class</div><div class="gt-pval">ROOKIE</div></div></div>'+
       '<div style="border:1px solid #E2E2E2;border-top:none;padding:6px 9px;font-family:var(--font-mono);font-size:11px;letter-spacing:1px;color:#2C2C2A;overflow:hidden;white-space:nowrap;">P&lt;GBR'+fmtName().replace(/ /g,'&lt;')+'&lt;&lt;&lt;&lt;&lt;&lt;</div></div>'}
 
-  function gtPostOnboarding(){
-    document.getElementById('gt-greet').textContent='Hi '+state.name.split(' ')[0];
-    gtWeek();
-    if(hasCheckedInToday())gtShow('s-home');
-    else gtGoTapIn();
-  }
+  function gtPostOnboarding(){saveProfile();showCoverReturnMode();gtShow('s-cover')}
   window.gtFinish=gtPostOnboarding;
   window.gtTab=function(id){
-    if((id==='s-home'||id==='s-log')&&!hasCheckedInToday()){gtGoTapIn();return}
     if(id!=='s-tapin')gtStopNfcScan();
     if(id==='s-home')gtWeek();
     gtShow(id);
@@ -367,19 +373,30 @@
   window.gtRmLift=function(i){state.lifts.splice(i,1);gtRenderLifts()};
   function gtRenderLifts(){var c=document.getElementById('gt-lifts');c.innerHTML=state.lifts.map(function(l,j){return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:#F1ECE0;"><div><div style="font-family:var(--font-serif);font-size:14px;color:var(--ink);">'+l.lift+'</div><div style="font-family:var(--font-mono);font-size:12px;color:var(--muted);">'+l.sets+'×'+l.reps+' · '+l.wt+'kg</div></div><button onclick="gtRmLift('+j+')" aria-label="Remove" style="background:none;border:none;cursor:pointer;color:var(--muted);"><i class="ti ti-x" style="font-size:18px;" aria-hidden="true"></i></button></div>'}).join('')}
   window.gtSaveWorkout=function(){var n=state.lifts.length;document.getElementById('gt-log-txt').textContent='Workout logged';document.getElementById('gt-today-val').textContent=(state.doneToday?'Checked in · ':'')+n+' lift'+(n===1?'':'s')+' logged';gtTab('s-home')};
+  function stampDateLabel(){return new Date().toLocaleString('en-GB',{day:'2-digit',month:'short'}).toUpperCase().replace(' ',' ')}
   function impHTML(d,dateStr){var icon=d.ic?'<i class="ti '+d.ic+'" style="font-size:15px;" aria-hidden="true"></i>':'';
     if(d.shape==='circle')return '<div style="width:80px;height:80px;border:2.5px solid '+d.color+';border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;"><div style="position:absolute;inset:6px;border:1px dashed '+d.color+';border-radius:50%;"></div><div style="font-size:10px;font-weight:700;">'+d.top+'</div>'+icon+'<div style="font-size:8px;letter-spacing:1px;">'+d.mid+'</div><div style="font-size:8px;border-top:1px solid '+d.color+';padding-top:1px;margin-top:1px;">'+dateStr+'</div></div>';
     return '<div style="min-width:96px;border:2.5px solid '+d.color+';border-radius:6px;padding:6px 10px;"><div style="font-size:10px;font-weight:700;letter-spacing:1px;">'+d.top+'</div><div style="display:flex;align-items:center;justify-content:center;gap:4px;font-size:9px;margin:2px 0;">'+icon+d.mid+'</div><div style="font-size:9px;letter-spacing:2px;border-top:1px solid '+d.color+';padding-top:2px;">'+dateStr+'</div></div>'}
+  function appendStampEl(book,stamp,animate){var w=book.clientWidth,h=book.clientHeight;var d=DESIGNS[(stamp.design||0)%DESIGNS.length];if(stamp.gym){var code=stamp.gym.replace(/[^a-zA-Z]/g,'').toUpperCase().slice(0,3);if(code)d=Object.assign({},d,{mid:code})}var imp=document.createElement('div');imp.className='gt-imp'+(animate?'':' set');imp.style.setProperty('--rot',(stamp.rot||0)+'deg');imp.style.left=(stamp.x*w)+'px';imp.style.top=(stamp.y*h)+'px';imp.style.color=d.color;imp.innerHTML=impHTML(d,stamp.dateLabel||stampDateLabel());book.appendChild(imp);if(animate)requestAnimationFrame(function(){requestAnimationFrame(function(){imp.classList.add('set')})});return imp}
+  function gtRenderStamps(){var book=document.getElementById('gt-book');if(!book)return;book.querySelectorAll('.gt-imp').forEach(function(el){el.remove()});var stamps=loadStamps();stamps.forEach(function(s){appendStampEl(book,s,false)});document.getElementById('gt-stampcount').textContent=stamps.length;document.getElementById('gt-stamp-hint').textContent=stamps.length?'your stamp collection':'tap anywhere to place your stamp'}
+  function gtPlaceStampOnBook(x,y){var book=document.getElementById('gt-book');var r=book.getBoundingClientRect();var stamps=loadStamps();var dIdx=stamps.length%DESIGNS.length;var rot=(Math.random()*30-15);var stamp={x:x/r.width,y:y/r.height,rot:rot,design:dIdx,dateIso:isoDate(new Date()),dateLabel:stampDateLabel(),gym:state.gym||''};persistStamp(stamp);appendStampEl(book,stamp,true);document.getElementById('gt-stampcount').textContent=loadStamps().length;document.getElementById('gt-stamp-hint').textContent='your stamp collection'}
   var book=document.getElementById('gt-book');
-  book.addEventListener('click',function(e){var r=book.getBoundingClientRect();var x=e.clientX-r.left,y=e.clientY-r.top;var d=DESIGNS[count%DESIGNS.length];var rot=(Math.random()*30-15).toFixed(1);var dateStr=(day+count)+' JUN';
-    var imp=document.createElement('div');imp.className='gt-imp';imp.style.setProperty('--rot',rot+'deg');imp.style.left=x+'px';imp.style.top=y+'px';imp.style.color=d.color;imp.innerHTML=impHTML(d,dateStr);book.appendChild(imp);
-    requestAnimationFrame(function(){requestAnimationFrame(function(){imp.classList.add('set')})});
-    count++;document.getElementById('gt-stampcount').textContent=count;document.getElementById('gt-stamp-hint').textContent='keep stamping, or tap in to earn more';});
+  book.addEventListener('click',function(e){var r=book.getBoundingClientRect();gtPlaceStampOnBook(e.clientX-r.left,e.clientY-r.top)});
 
   var p=new URLSearchParams(window.location.search);
-  if(p.get('checkedin')==='1'){saveCheckin();gtWeek();gtShow('s-home');history.replaceState(null,'',window.location.pathname)}
-  else if(hasCheckedInToday()&&localStorage.getItem('gymtap-onboarded')==='1'){gtWeek();gtShow('s-home')}
-  window.gtFinish=function(){try{localStorage.setItem('gymtap-onboarded','1')}catch(e){}gtPostOnboarding()};
+  var profile=loadProfile();
+  if(profile){applyProfile(profile);showCoverReturnMode()}
+  else showCoverFirstMode();
+  gtRenderStamps();
+  if(p.get('checkedin')==='1'){
+    if(profile)applyProfile(profile);
+    document.getElementById('gt-greet').textContent='Hi '+(state.name||'there').split(' ')[0];
+    gtWeek();
+    if(hasCheckedInToday())document.getElementById('gt-today-val').textContent='Checked in';
+    gtRenderStamps();
+    gtShow('s-home');
+    history.replaceState(null,'',window.location.pathname);
+  }
 })();
 </script>
 </body>

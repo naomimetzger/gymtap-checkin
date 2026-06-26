@@ -58,7 +58,7 @@
       padding: 34px 26px;
     }
     .scr.on { display: flex; }
-    .scr--done { justify-content: flex-start; padding-top: 28px; overflow-y: auto; }
+    .scr--stamp { justify-content: flex-start; padding-top: 28px; }
     .kick {
       font-family: var(--mono);
       font-size: 10px;
@@ -72,6 +72,21 @@
       font-size: 26px;
       line-height: 1.15;
       margin: 0 0 10px;
+    }
+    .h--split {
+      font-family: var(--mono);
+      font-size: 20px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      line-height: 1.25;
+      margin: 0;
+    }
+    .h--split + .h--split {
+      color: var(--burg);
+      font-size: 17px;
+      letter-spacing: 2px;
+      margin-top: 6px;
+      margin-bottom: 16px;
     }
     .sub {
       color: var(--muted);
@@ -132,24 +147,7 @@
     .spin { animation: sp 1s linear infinite; }
     @keyframes sp { to { transform: rotate(360deg); } }
     .err { color: #b23a3a; font-size: 13px; margin-top: 14px; min-height: 18px; }
-    .pass {
-      width: 100%;
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      font-family: var(--mono);
-      text-align: left;
-      background: #fff;
-    }
-    .selfie { width: 100%; height: 150px; object-fit: cover; }
-    .prow {
-      display: flex;
-      justify-content: space-between;
-      padding: 10px 14px;
-      font-size: 12px;
-    }
-    .plabel { color: #8a857c; font-style: italic; font-family: var(--serif); }
-    .stamp-section { width: 100%; margin-top: 20px; text-align: left; }
+    .stamp-section { width: 100%; margin-top: 8px; text-align: left; }
     .stamp-hint {
       font-family: var(--mono);
       font-size: 10px;
@@ -157,16 +155,18 @@
       color: var(--burg);
       text-transform: uppercase;
       margin-bottom: 10px;
+      text-align: center;
     }
     .stamp-book {
       position: relative;
-      height: 200px;
+      height: 320px;
       border-radius: 4px;
       background: #e9e2d1;
       border: 1px solid var(--line);
       overflow: hidden;
       cursor: crosshair;
     }
+    .stamp-book--locked { cursor: default; }
     .stamp-book__watermark {
       position: absolute;
       inset: 0;
@@ -189,6 +189,18 @@
     .gt-imp.set {
       opacity: 0.85;
       transform: translate(-50%, -50%) scale(1) rotate(var(--rot, 0deg));
+    }
+    .success-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      border: 2px solid #2e8b57;
+      background: rgba(46, 139, 87, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2e8b57;
+      margin-bottom: 22px;
     }
   </style>
 </head>
@@ -224,7 +236,7 @@
     <section class="scr" id="s-selfie">
       <p class="kick" id="verifytag">Location confirmed</p>
       <h1 class="h">Smile — you made it</h1>
-      <p class="sub">Snap a selfie. It becomes today&apos;s stamp.</p>
+      <p class="sub">Snap a selfie to earn today&apos;s stamp.</p>
       <label class="btn" id="btn-camera" for="cam">
         <i class="ti ti-camera" style="font-size:16px;vertical-align:-3px;margin-right:6px" aria-hidden="true"></i>
         Take selfie
@@ -233,18 +245,19 @@
       <p class="err" id="err2" role="alert"></p>
     </section>
 
-    <section class="scr scr--done" id="s-done">
-      <p class="kick">
-        <i class="ti ti-circle-check" style="color:#2e8b57;font-size:15px;vertical-align:-2px" aria-hidden="true"></i>
-        You&apos;re in
-      </p>
-      <h1 class="h" style="margin-bottom:8px">Stamped</h1>
-      <p class="sub" style="margin-bottom:16px;font-size:13px">You earned a stamp. It&apos;s in your passport below.</p>
-      <div class="pass" id="passcard"></div>
+    <section class="scr" id="s-success">
+      <div class="success-icon"><i class="ti ti-circle-check" style="font-size:36px" aria-hidden="true"></i></div>
+      <h1 class="h h--split">You showed up</h1>
+      <h2 class="h h--split">You earned a stamp</h2>
+      <p class="sub" style="margin-bottom:24px">Tap the blank page to place it in your passport.</p>
+      <button type="button" class="btn" id="btn-to-stamp">Place my stamp</button>
+    </section>
 
+    <section class="scr scr--stamp" id="s-stamp-place">
+      <p class="kick">Stamp page</p>
+      <p class="stamp-hint" id="stamp-hint">Tap the page to place your stamp</p>
       <div class="stamp-section">
-        <p class="stamp-hint" id="stamp-hint">Tap the page to place another stamp</p>
-        <div class="stamp-book" id="stamp-book" role="img" aria-label="Passport stamp page">
+        <div class="stamp-book" id="stamp-book" role="img" aria-label="Blank passport stamp page">
           <div class="tex" aria-hidden="true"></div>
           <svg class="stamp-book__watermark" viewBox="0 0 200 200" aria-hidden="true">
             <circle cx="100" cy="100" r="70" fill="none" stroke="#6b5b3a" />
@@ -260,6 +273,7 @@
   <script>
     (function () {
       var CHECKIN_KEY = "gymtap-checkins";
+      var STAMPS_KEY = "gymtap-stamps";
       var params = new URLSearchParams(window.location.search);
       var fromNfc =
         params.has("nfc") ||
@@ -289,14 +303,14 @@
 
       var selfieData = null;
       var verified = false;
-      var stampCount = 0;
+      var stampPlaced = false;
 
       var gymNameEl = document.getElementById("gymname");
       var verifyTagEl = document.getElementById("verifytag");
       var farsubEl = document.getElementById("farsub");
-      var passcardEl = document.getElementById("passcard");
       var stampBook = document.getElementById("stamp-book");
       var stampHint = document.getElementById("stamp-hint");
+      var passportLink = document.getElementById("passport-link");
 
       gymNameEl.textContent = GYM.name;
 
@@ -310,6 +324,22 @@
           "-" +
           String(x.getDate()).padStart(2, "0")
         );
+      }
+
+      function loadStamps() {
+        try {
+          return JSON.parse(localStorage.getItem(STAMPS_KEY) || "[]");
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function persistStamp(stamp) {
+        try {
+          var list = loadStamps();
+          list.push(stamp);
+          localStorage.setItem(STAMPS_KEY, JSON.stringify(list));
+        } catch (e) {}
       }
 
       function recordCheckin() {
@@ -395,68 +425,51 @@
       }
 
       function placeStamp(x, y) {
-        var d = STAMP_DESIGN;
+        if (stampPlaced) return;
+        stampPlaced = true;
+        stampBook.classList.add("stamp-book--locked");
+
+        var d = Object.assign({}, STAMP_DESIGN);
         d.mid = gymCode().slice(0, 3);
         var rot = (Math.random() * 24 - 12).toFixed(1);
+        var dateLabel = stampDateLabel();
+        var bookW = stampBook.clientWidth;
+        var bookH = stampBook.clientHeight;
+
         var imp = document.createElement("div");
         imp.className = "gt-imp";
         imp.style.setProperty("--rot", rot + "deg");
         imp.style.left = x + "px";
         imp.style.top = y + "px";
         imp.style.color = d.color;
-        imp.innerHTML = stampHTML(d, stampDateLabel());
+        imp.innerHTML = stampHTML(d, dateLabel);
         stampBook.appendChild(imp);
         requestAnimationFrame(function () {
           requestAnimationFrame(function () {
             imp.classList.add("set");
           });
         });
-        stampCount++;
-        stampHint.textContent =
-          stampCount === 1
-            ? "Tap the page to place another stamp"
-            : stampCount + " stamps on this page";
-      }
 
-      function placeStampCenter() {
-        var r = stampBook.getBoundingClientRect();
-        placeStamp(r.width * 0.5, r.height * 0.42);
-      }
-
-      function buildPass() {
-        var now = new Date();
-        var date = now.toLocaleString("en-GB", { day: "2-digit", month: "short" }).toUpperCase();
-        var time = now.toLocaleString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
-        var code = gymCode();
-        passcardEl.innerHTML =
-          '<img class="selfie" src="' +
-          selfieData +
-          '" alt="Check-in selfie" />' +
-          '<div style="background:var(--burg);color:#fff;padding:8px 14px;display:flex;justify-content:space-between;font-size:11px;letter-spacing:1px">' +
-          "<span>ARRIVED · " +
-          code +
-          "</span><span>" +
-          (verified ? "VERIFIED" : "CHECK-IN") +
-          "</span></div>" +
-          '<div class="prow" style="border-bottom:1px dashed var(--line)"><span class="plabel">Date</span><span>' +
-          date +
-          "</span></div>" +
-          '<div class="prow" style="border-bottom:1px dashed var(--line)"><span class="plabel">Time</span><span>' +
-          time +
-          "</span></div>" +
-          '<div class="prow"><span class="plabel">Gym</span><span>' +
-          GYM.name.toUpperCase() +
-          "</span></div>";
-      }
-
-      function finish() {
+        persistStamp({
+          x: x / bookW,
+          y: y / bookH,
+          rot: parseFloat(rot),
+          design: 0,
+          dateIso: isoDate(new Date()),
+          dateLabel: dateLabel,
+          gym: GYM.name,
+        });
         recordCheckin();
-        buildPass();
-        show("s-done");
+
+        stampHint.textContent = "Stamp placed — check-in complete";
+        passportLink.style.display = "block";
         if (fromPassport) {
-          document.getElementById("passport-link").style.display = "block";
+          passportLink.href = "/?checkedin=1";
         }
-        requestAnimationFrame(placeStampCenter);
+      }
+
+      function afterSelfie() {
+        show("s-success");
       }
 
       function gotoSelfie() {
@@ -499,6 +512,9 @@
       }
 
       document.getElementById("btn-start").addEventListener("click", start);
+      document.getElementById("btn-to-stamp").addEventListener("click", function () {
+        show("s-stamp-place");
+      });
       document.querySelectorAll("[data-goto]").forEach(function (btn) {
         btn.addEventListener("click", function () {
           show(btn.getAttribute("data-goto"));
@@ -510,11 +526,12 @@
         var r = new FileReader();
         r.onload = function (ev) {
           selfieData = ev.target.result;
-          finish();
+          afterSelfie();
         };
         r.readAsDataURL(f);
       });
       stampBook.addEventListener("click", function (e) {
+        if (stampPlaced) return;
         var r = stampBook.getBoundingClientRect();
         placeStamp(e.clientX - r.left, e.clientY - r.top);
       });

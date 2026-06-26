@@ -50,9 +50,11 @@
     .pp-nav button{flex:1;background:none;border:none;padding:11px 0;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:var(--muted);cursor:pointer;text-transform:uppercase}
     .pp-nav button.act{color:var(--burg)}
     .pp-pageno{position:absolute;top:14px;right:16px;font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--muted);z-index:2}
-    .gt-cover{position:absolute;inset:0;border-radius:6px 12px 12px 6px;transform-origin:left center;transition:transform 1.15s cubic-bezier(.6,.02,.2,1);box-shadow:0 10px 28px rgba(44,44,42,.22);cursor:pointer;z-index:3;backface-visibility:hidden;background:#0a0a0a;display:flex;align-items:center;justify-content:center}
+    .gt-cover{position:absolute;inset:0;border-radius:6px 12px 12px 6px;transform-origin:left center;transition:transform 1.15s cubic-bezier(.6,.02,.2,1);box-shadow:0 10px 28px rgba(44,44,42,.22);cursor:pointer;z-index:3;backface-visibility:hidden;background:transparent;overflow:visible}
     .gt-cover img{width:100%;height:100%;object-fit:contain;display:block;background:transparent}
-    .gt-cover img#gt-cover-img{transition:opacity .35s ease}
+    .gt-cover img#gt-cover-img{transition:opacity .35s ease,transform .35s ease;transform-origin:center center}
+    .gt-cover img#gt-cover-img.cover-pink{mix-blend-mode:multiply;transform:scale(1.454)}
+    .gt-cover img#gt-cover-img.cover-black{mix-blend-mode:screen;transform:scale(1)}
     .gt-cover img#gt-cover-img.fade{opacity:0}
     .pp-cover-toggle{margin-top:auto;width:100%;max-width:240px;padding:11px 14px;font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;background:#F4F0E6;color:var(--burg);border:1.5px solid var(--line);border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}
     .pp-cover-toggle:hover{border-color:var(--burg);background:#ECE7DB}
@@ -216,7 +218,7 @@
 
   function loadCoverPref(){try{var s=localStorage.getItem(COVER_KEY);if(s==='pink'||s==='black')coverColor=s}catch(e){}}
   function updateCoverToggleLabel(){var lbl=document.getElementById('gt-cover-toggle-label');if(lbl)lbl.textContent=coverColor==='black'?'Switch to pink cover':'Switch to black cover'}
-  function applyCover(animate){var img=document.getElementById('gt-cover-img');if(!img)return;if(animate){img.classList.add('fade');setTimeout(function(){img.src=COVER_SRC[coverColor];img.onload=function(){img.classList.remove('fade');img.onload=null}},180)}else{img.src=COVER_SRC[coverColor]}updateCoverToggleLabel()}
+  function applyCover(animate){var img=document.getElementById('gt-cover-img');if(!img)return;img.classList.remove('cover-pink','cover-black');img.classList.add(coverColor==='pink'?'cover-pink':'cover-black');if(animate){img.classList.add('fade');setTimeout(function(){img.src=COVER_SRC[coverColor];img.onload=function(){img.classList.remove('fade');img.onload=null}},180)}else{img.src=COVER_SRC[coverColor]}updateCoverToggleLabel()}
   window.gtToggleCover=function(){coverColor=coverColor==='black'?'pink':'black';try{localStorage.setItem(COVER_KEY,coverColor)}catch(e){}applyCover(true)};
   loadCoverPref();applyCover(false);
 
